@@ -280,6 +280,53 @@ jobs:
           grep -n '오늘도' DropboxMusicPlayer/app/src/main/res/layout/activity_main.xml
           grep -n '재생 중' DropboxMusicPlayer/app/src/main/res/layout/activity_player.xml
 
+      - name: Apply v5.4 rollback layout real queue cute font and YouTube recovery
+        run: |
+          cat ci/v54/patch.part00 ci/v54/patch.part01 ci/v54/patch.part02 ci/v54/patch.part03 ci/v54/patch.part04 ci/v54/patch.part05 > v54patch.b64
+          base64 -d v54patch.b64 > v54patch.tgz
+          echo "7b555f92e8046b15862b863a429adfe02e8b8a28d29c113c2dd019aefac50336  v54patch.tgz" | sha256sum -c -
+          rm -rf v54patch
+          mkdir -p v54patch
+          tar -xzf v54patch.tgz -C v54patch
+
+          cp v54patch/activity_main.xml DropboxMusicPlayer/app/src/main/res/layout/activity_main.xml
+          cp v54patch/activity_youtube_library.xml DropboxMusicPlayer/app/src/main/res/layout/activity_youtube_library.xml
+          cp v54patch/activity_player.xml DropboxMusicPlayer/app/src/main/res/layout/activity_player.xml
+          cp v54patch/item_queue.xml DropboxMusicPlayer/app/src/main/res/layout/item_queue.xml
+
+          cp v54patch/MainActivity.java DropboxMusicPlayer/app/src/main/java/com/dongjin/dropboxmusic/MainActivity.java
+          cp v54patch/YoutubeLibraryActivity.java DropboxMusicPlayer/app/src/main/java/com/dongjin/dropboxmusic/YoutubeLibraryActivity.java
+          cp v54patch/PlayerActivity.java DropboxMusicPlayer/app/src/main/java/com/dongjin/dropboxmusic/PlayerActivity.java
+          cp v54patch/YoutubePlayerActivity.java DropboxMusicPlayer/app/src/main/java/com/dongjin/dropboxmusic/YoutubePlayerActivity.java
+          cp v54patch/PlaybackService.java DropboxMusicPlayer/app/src/main/java/com/dongjin/dropboxmusic/PlaybackService.java
+          cp v54patch/YoutubeStreamResolver.java DropboxMusicPlayer/app/src/main/java/com/dongjin/dropboxmusic/YoutubeStreamResolver.java
+          cp v54patch/QueueAdapter.java DropboxMusicPlayer/app/src/main/java/com/dongjin/dropboxmusic/QueueAdapter.java
+
+          cp v54patch/themes.xml DropboxMusicPlayer/app/src/main/res/values/themes.xml
+          mkdir -p DropboxMusicPlayer/app/src/main/res/color
+          cp v54patch/nudeong_tab_bg.xml DropboxMusicPlayer/app/src/main/res/color/nudeong_tab_bg.xml
+          cp v54patch/nudeong_tab_text.xml DropboxMusicPlayer/app/src/main/res/color/nudeong_tab_text.xml
+
+          mkdir -p DropboxMusicPlayer/app/src/main/res/font
+          curl -L --fail --retry 3             https://raw.githubusercontent.com/google/fonts/main/ofl/jua/Jua-Regular.ttf             -o DropboxMusicPlayer/app/src/main/res/font/jua_regular.ttf
+
+          python v54patch/patch_v54.py
+
+      - name: Verify v5.4 UI and playback fixes
+        run: |
+          grep -n "versionCode 101" DropboxMusicPlayer/app/build.gradle
+          grep -n "versionName '5.4.0-nudeong'" DropboxMusicPlayer/app/build.gradle
+          grep -n "com.dongjin.nudeongmusic" DropboxMusicPlayer/app/build.gradle
+          grep -n 'android:name="com.dongjin.dropboxmusic.ModeSelectActivity"' DropboxMusicPlayer/app/src/main/AndroidManifest.xml
+          grep -n 'android.intent.category.LAUNCHER' DropboxMusicPlayer/app/src/main/AndroidManifest.xml
+          test -s DropboxMusicPlayer/app/src/main/res/font/jua_regular.ttf
+          grep -n '@font/jua_regular' DropboxMusicPlayer/app/src/main/res/values/themes.xml
+          grep -n 'queueRecycler' DropboxMusicPlayer/app/src/main/res/layout/activity_player.xml
+          grep -n 'btnSeeAll' DropboxMusicPlayer/app/src/main/res/layout/activity_player.xml
+          grep -n 'class QueueAdapter' DropboxMusicPlayer/app/src/main/java/com/dongjin/dropboxmusic/QueueAdapter.java
+          grep -n 'VideoStream' DropboxMusicPlayer/app/src/main/java/com/dongjin/dropboxmusic/YoutubeStreamResolver.java
+          grep -n 'retriedYoutubeId' DropboxMusicPlayer/app/src/main/java/com/dongjin/dropboxmusic/PlaybackService.java
+
       - name: Verify v5.2.4 Nudeong resources and manifest
         run: |
           file DropboxMusicPlayer/app/src/main/res/drawable-nodpi/nudeong_phone.webp
@@ -293,13 +340,13 @@ jobs:
           grep -n "requestedMediaId" DropboxMusicPlayer/app/src/main/java/com/dongjin/dropboxmusic/YoutubePlayerActivity.java
 
       - name: Pack current source
-        run: tar -czf MusicHub-v5.3.0-Nudeong-source.tgz DropboxMusicPlayer
+        run: tar -czf MusicHub-v5.4.0-Nudeong-source.tgz DropboxMusicPlayer
 
       - name: Upload current source
         uses: actions/upload-artifact@v4
         with:
-          name: MusicHub-v5.3.0-Nudeong-Source
-          path: MusicHub-v5.3.0-Nudeong-source.tgz
+          name: MusicHub-v5.4.0-Nudeong-Source
+          path: MusicHub-v5.4.0-Nudeong-source.tgz
           if-no-files-found: error
 
       - name: Install stable debug signing key
@@ -318,11 +365,11 @@ jobs:
           "$ANDROID_HOME/build-tools/36.0.0/apksigner" verify --verbose --print-certs DropboxMusicPlayer/app/build/outputs/apk/debug/app-debug.apk
 
       - name: Rename APK
-        run: cp DropboxMusicPlayer/app/build/outputs/apk/debug/app-debug.apk MusicHub-v5.3.0-Nudeong.apk
+        run: cp DropboxMusicPlayer/app/build/outputs/apk/debug/app-debug.apk MusicHub-v5.4.0-Nudeong.apk
 
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
-          name: MusicHub-v5.3.0-Nudeong-APK
-          path: MusicHub-v5.3.0-Nudeong.apk
+          name: MusicHub-v5.4.0-Nudeong-APK
+          path: MusicHub-v5.4.0-Nudeong.apk
           if-no-files-found: error
