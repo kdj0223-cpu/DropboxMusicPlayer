@@ -59,6 +59,12 @@ jobs:
           echo "31c8022e0f35979d534302450b91f6c9ee612143cd559e11aa5739bb0e427e9c  youtube_v40.tgz" | sha256sum -c -
           tar -xzf youtube_v40.tgz -C DropboxMusicPlayer
 
+      - name: Apply v4.0.1 compatibility fix
+        run: |
+          base64 -d ci/youtube_v401_fix.b64 > youtube_v401_fix.tgz
+          echo "fe388b42b78a4fba7917c6f956aaaca6757db8cb3a5fe561da013c3d3256a410  youtube_v401_fix.tgz" | sha256sum -c -
+          tar -xzf youtube_v401_fix.tgz -C DropboxMusicPlayer
+
       - name: Pack current source
         run: tar -czf MusicHub-v4.0-source.tgz DropboxMusicPlayer
 
