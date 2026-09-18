@@ -1,0 +1,448 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/rootPlayer"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/nudeong_bg"
+    android:fillViewport="true"
+    android:clipToPadding="false">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:paddingStart="16dp"
+        android:paddingTop="6dp"
+        android:paddingEnd="16dp"
+        android:paddingBottom="24dp">
+
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="58dp">
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnBack"
+                style="@style/Widget.Material3.Button.IconButton"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:layout_gravity="start|center_vertical"
+                app:backgroundTint="@android:color/transparent"
+                app:icon="@drawable/ic_arrow_back"
+                app:iconTint="@color/nudeong_primary_dark"
+                app:iconSize="28dp"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:text="재생 중"
+                android:textColor="@color/nudeong_text"
+                android:textSize="22sp"
+                android:textStyle="bold"/>
+
+            <TextView
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:layout_gravity="end|center_vertical"
+                android:gravity="center"
+                android:text="•••"
+                android:textColor="@color/nudeong_primary_dark"
+                android:textSize="21sp"/>
+        </FrameLayout>
+
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="328dp"
+            android:layout_marginTop="2dp">
+
+            <TextView
+                android:layout_width="92dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="start|center_vertical"
+                android:layout_marginStart="2dp"
+                android:gravity="center"
+                android:text="노래는
+언제나
+좋아 ..
+🐾"
+                android:textColor="#9A7A62"
+                android:textSize="14sp"/>
+
+            <TextView
+                android:layout_width="94dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="end|top"
+                android:layout_marginTop="24dp"
+                android:gravity="center"
+                android:text="좋은 노래
+많이 듣자 ..
+🐾"
+                android:textColor="#9A7A62"
+                android:textSize="14sp"/>
+
+            <TextView
+                android:layout_width="92dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="end|bottom"
+                android:layout_marginBottom="34dp"
+                android:gravity="center"
+                android:text="오늘도
+너와,
+좋은 음악
+♪"
+                android:textColor="#9A7A62"
+                android:textSize="14sp"/>
+
+            <com.google.android.material.card.MaterialCardView
+                android:layout_width="250dp"
+                android:layout_height="250dp"
+                android:layout_gravity="center"
+                app:cardBackgroundColor="#FFF2E2"
+                app:cardCornerRadius="30dp"
+                app:cardElevation="6dp">
+                <ImageView
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:padding="12dp"
+                    android:scaleType="centerInside"
+                    android:src="@drawable/nudeong_phone"
+                    android:contentDescription="휴대폰을 든 누덩이"/>
+            </com.google.android.material.card.MaterialCardView>
+        </FrameLayout>
+
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="86dp">
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:gravity="center"
+                android:orientation="vertical"
+                android:paddingStart="48dp"
+                android:paddingEnd="48dp">
+                <TextView
+                    android:id="@+id/playerTitle"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:ellipsize="end"
+                    android:gravity="center"
+                    android:maxLines="1"
+                    android:text="너와 듣고 싶은 노래"
+                    android:textColor="@color/nudeong_text"
+                    android:textSize="25sp"
+                    android:textStyle="bold"/>
+                <TextView
+                    android:id="@+id/playerSubtitle"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="2dp"
+                    android:ellipsize="end"
+                    android:gravity="center"
+                    android:maxLines="1"
+                    android:text="YouTube에서 추가한 곡"
+                    android:textColor="@color/nudeong_text_muted"
+                    android:textSize="15sp"/>
+            </LinearLayout>
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnFavorite"
+                style="@style/Widget.Material3.Button.IconButton"
+                android:layout_width="54dp"
+                android:layout_height="54dp"
+                android:layout_gravity="end|center_vertical"
+                app:backgroundTint="@android:color/transparent"
+                app:icon="@drawable/ic_favorite_border"
+                app:iconTint="@color/nudeong_primary_dark"
+                app:iconSize="31dp"/>
+        </FrameLayout>
+
+        <SeekBar
+            android:id="@+id/seekBar"
+            android:layout_width="match_parent"
+            android:layout_height="30dp"
+            android:max="1000"
+            android:progressTint="@color/nudeong_primary"
+            android:thumbTint="@color/nudeong_primary"/>
+
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="28dp">
+            <TextView
+                android:id="@+id/timeCurrent"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="start"
+                android:text="0:00"
+                android:textColor="@color/nudeong_text_muted"
+                android:textSize="13sp"/>
+            <TextView
+                android:id="@+id/timeDuration"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="end"
+                android:text="0:00"
+                android:textColor="@color/nudeong_text_muted"
+                android:textSize="13sp"/>
+        </FrameLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="82dp"
+            android:gravity="center"
+            android:orientation="horizontal">
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnPrev"
+                style="@style/Widget.Material3.Button.IconButton"
+                android:layout_width="58dp"
+                android:layout_height="58dp"
+                app:backgroundTint="@android:color/transparent"
+                app:icon="@drawable/ic_skip_previous"
+                app:iconTint="@color/nudeong_primary_dark"
+                app:iconSize="31dp"/>
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnRew"
+                style="@style/Widget.Material3.Button.TextButton"
+                android:layout_width="58dp"
+                android:layout_height="58dp"
+                android:text="↶
+10"
+                android:textColor="@color/nudeong_primary_dark"
+                android:textSize="15sp"/>
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnPlay"
+                style="@style/Widget.Material3.Button.IconButton.Filled"
+                android:layout_width="82dp"
+                android:layout_height="82dp"
+                android:layout_marginStart="8dp"
+                android:layout_marginEnd="8dp"
+                app:backgroundTint="@color/nudeong_primary"
+                app:cornerRadius="41dp"
+                app:icon="@drawable/ic_play"
+                app:iconTint="@color/white"
+                app:iconSize="36dp"/>
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnFwd"
+                style="@style/Widget.Material3.Button.TextButton"
+                android:layout_width="58dp"
+                android:layout_height="58dp"
+                android:text="↷
+10"
+                android:textColor="@color/nudeong_primary_dark"
+                android:textSize="15sp"/>
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnNext"
+                style="@style/Widget.Material3.Button.IconButton"
+                android:layout_width="58dp"
+                android:layout_height="58dp"
+                app:backgroundTint="@android:color/transparent"
+                app:icon="@drawable/ic_skip_next"
+                app:iconTint="@color/nudeong_primary_dark"
+                app:iconSize="31dp"/>
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="92dp"
+            android:gravity="center"
+            android:orientation="horizontal"
+            android:weightSum="5">
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnShuffle"
+                style="@style/Widget.Material3.Button.OutlinedButton"
+                android:layout_width="0dp"
+                android:layout_height="76dp"
+                android:layout_margin="3dp"
+                android:layout_weight="1"
+                android:text="셔플"
+                android:textColor="@color/nudeong_text"
+                android:textSize="12sp"
+                app:backgroundTint="@color/nudeong_panel"
+                app:cornerRadius="18dp"
+                app:icon="@drawable/ic_shuffle"
+                app:iconGravity="textTop"
+                app:iconTint="@color/nudeong_primary_dark"
+                app:strokeColor="@color/nudeong_outline"/>
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnRepeat"
+                style="@style/Widget.Material3.Button.OutlinedButton"
+                android:layout_width="0dp"
+                android:layout_height="76dp"
+                android:layout_margin="3dp"
+                android:layout_weight="1"
+                android:text="반복"
+                android:textColor="@color/nudeong_text"
+                android:textSize="12sp"
+                app:backgroundTint="@color/nudeong_panel"
+                app:cornerRadius="18dp"
+                app:icon="@drawable/ic_repeat"
+                app:iconGravity="textTop"
+                app:iconTint="@color/nudeong_primary_dark"
+                app:strokeColor="@color/nudeong_outline"/>
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnSpeed"
+                style="@style/Widget.Material3.Button.OutlinedButton"
+                android:layout_width="0dp"
+                android:layout_height="76dp"
+                android:layout_margin="3dp"
+                android:layout_weight="1"
+                android:text="1.0x"
+                android:textColor="@color/nudeong_text"
+                android:textSize="14sp"
+                app:backgroundTint="@color/nudeong_panel"
+                app:cornerRadius="18dp"
+                app:strokeColor="@color/nudeong_outline"/>
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnSleep"
+                style="@style/Widget.Material3.Button.OutlinedButton"
+                android:layout_width="0dp"
+                android:layout_height="76dp"
+                android:layout_margin="3dp"
+                android:layout_weight="1"
+                android:text="슬립
+타이머"
+                android:textColor="@color/nudeong_text"
+                android:textSize="11sp"
+                app:backgroundTint="@color/nudeong_panel"
+                app:cornerRadius="18dp"
+                app:icon="@drawable/ic_timer"
+                app:iconGravity="textTop"
+                app:iconTint="@color/nudeong_primary_dark"
+                app:strokeColor="@color/nudeong_outline"/>
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnFavoriteDecor"
+                style="@style/Widget.Material3.Button.OutlinedButton"
+                android:layout_width="0dp"
+                android:layout_height="76dp"
+                android:layout_margin="3dp"
+                android:layout_weight="1"
+                android:clickable="false"
+                android:focusable="false"
+                android:text="즐겨찾기"
+                android:textColor="@color/nudeong_text"
+                android:textSize="11sp"
+                app:backgroundTint="@color/nudeong_panel"
+                app:cornerRadius="18dp"
+                app:icon="@drawable/ic_favorite_border"
+                app:iconGravity="textTop"
+                app:iconTint="@color/nudeong_primary_dark"
+                app:strokeColor="@color/nudeong_outline"/>
+        </LinearLayout>
+
+        <com.google.android.material.card.MaterialCardView
+            android:layout_width="match_parent"
+            android:layout_height="230dp"
+            android:layout_marginTop="8dp"
+            app:cardBackgroundColor="@color/nudeong_panel"
+            app:cardCornerRadius="26dp"
+            app:cardElevation="0dp"
+            app:strokeColor="@color/nudeong_outline"
+            app:strokeWidth="1dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical"
+                android:padding="14dp">
+
+                <FrameLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="34dp">
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="start|center_vertical"
+                        android:text="다음 재생"
+                        android:textColor="@color/nudeong_text"
+                        android:textSize="18sp"
+                        android:textStyle="bold"/>
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="end|center_vertical"
+                        android:text="모두 보기  ›"
+                        android:textColor="@color/nudeong_text_muted"
+                        android:textSize="13sp"/>
+                </FrameLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="54dp"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal">
+                    <ImageView android:layout_width="62dp" android:layout_height="50dp" android:padding="3dp" android:scaleType="centerInside" android:src="@drawable/nudeong_bowl"/>
+                    <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:paddingStart="10dp" android:text="조심,,,
+10CM" android:textColor="@color/nudeong_text" android:textSize="14sp"/>
+                    <TextView android:layout_width="28dp" android:layout_height="match_parent" android:gravity="center" android:text="•••" android:textColor="@color/nudeong_text_muted"/>
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="54dp"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal">
+                    <ImageView android:layout_width="62dp" android:layout_height="50dp" android:padding="3dp" android:scaleType="centerInside" android:src="@drawable/nudeong_desk"/>
+                    <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:paddingStart="10dp" android:text="어서오세요
+10CM" android:textColor="@color/nudeong_text" android:textSize="14sp"/>
+                    <TextView android:layout_width="28dp" android:layout_height="match_parent" android:gravity="center" android:text="•••" android:textColor="@color/nudeong_text_muted"/>
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="54dp"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal">
+                    <ImageView android:layout_width="62dp" android:layout_height="50dp" android:padding="3dp" android:scaleType="centerInside" android:src="@drawable/nudeong_pair"/>
+                    <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:paddingStart="10dp" android:text="저기 뚱덩.. 아니 밤덩아 알려줄게 있어
+10CM" android:textColor="@color/nudeong_text" android:textSize="13sp"/>
+                    <TextView android:layout_width="28dp" android:layout_height="match_parent" android:gravity="center" android:text="•••" android:textColor="@color/nudeong_text_muted"/>
+                </LinearLayout>
+            </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
+
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="118dp"
+            android:layout_marginTop="12dp">
+
+            <TextView
+                android:layout_width="220dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="start|center_vertical"
+                android:layout_marginStart="32dp"
+                android:text="🐾 🐾    좋은 음악이
+좋은 하루를 만들어요 ♡"
+                android:textColor="#9A7A62"
+                android:textSize="14sp"/>
+
+            <ImageView
+                android:layout_width="110dp"
+                android:layout_height="100dp"
+                android:layout_gravity="end|center_vertical"
+                android:layout_marginEnd="46dp"
+                android:scaleType="centerInside"
+                android:src="@drawable/nudeong_bottle"/>
+
+            <TextView
+                android:layout_width="92dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="end|center_vertical"
+                android:gravity="center"
+                android:text="오늘도
+수고했어 .. ♡"
+                android:textColor="#9A7A62"
+                android:textSize="13sp"/>
+        </FrameLayout>
+    </LinearLayout>
+</ScrollView>
