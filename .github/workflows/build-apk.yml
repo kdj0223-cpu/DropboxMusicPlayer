@@ -262,6 +262,8 @@ jobs:
 
       - name: Apply v5.3 exact mockup UI and fresh install package
         run: |
+          python -m pip install --quiet pillow numpy
+          python ci/v53/clean_assets.py
           cp ci/v53/activity_main.xml DropboxMusicPlayer/app/src/main/res/layout/activity_main.xml
           cp ci/v53/activity_youtube_library.xml DropboxMusicPlayer/app/src/main/res/layout/activity_youtube_library.xml
           cp ci/v53/activity_player.xml DropboxMusicPlayer/app/src/main/res/layout/activity_player.xml
