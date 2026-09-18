@@ -99,7 +99,7 @@ jobs:
           cp ci/nudeong_bottle.webp DropboxMusicPlayer/app/src/main/res/drawable-nodpi/nudeong_bottle.webp
           cp ci/nudeong_progress.webp DropboxMusicPlayer/app/src/main/res/drawable-nodpi/nudeong_progress.webp
 
-      - name: Apply v5.2.2 varied artwork icon playback and inset fixes
+      - name: Apply v5.2.4 varied artwork icon playback and inset fixes
         run: |
           python - <<'PY'
           from pathlib import Path
@@ -127,8 +127,8 @@ jobs:
               p.write_text("".join(out))
 
           # Version
-          replace(Path("app/build.gradle"), "versionCode 9", "versionCode 12")
-          replace(Path("app/build.gradle"), "versionName '5.1.1-nudeong'", "versionName '5.2.2-nudeong'")
+          replace(Path("app/build.gradle"), "versionCode 9", "versionCode 13")
+          replace(Path("app/build.gradle"), "versionName '5.1.1-nudeong'", "versionName '5.2.4-nudeong'")
 
           # Launcher icon: use the entire original square image exactly, no face crop.
           replace(
@@ -260,7 +260,7 @@ jobs:
           """)
           PY
 
-      - name: Verify v5.2.2 Nudeong resources and manifest
+      - name: Verify v5.2.4 Nudeong resources and manifest
         run: |
           file DropboxMusicPlayer/app/src/main/res/drawable-nodpi/nudeong_phone.webp
           file DropboxMusicPlayer/app/src/main/res/drawable-nodpi/nudeong_pair.webp
@@ -273,25 +273,36 @@ jobs:
           grep -n "requestedMediaId" DropboxMusicPlayer/app/src/main/java/com/dongjin/dropboxmusic/YoutubePlayerActivity.java
 
       - name: Pack current source
-        run: tar -czf MusicHub-v5.2.2-Nudeong-source.tgz DropboxMusicPlayer
+        run: tar -czf MusicHub-v5.2.4-Nudeong-source.tgz DropboxMusicPlayer
 
       - name: Upload current source
         uses: actions/upload-artifact@v4
         with:
-          name: MusicHub-v5.2.2-Nudeong-Source
-          path: MusicHub-v5.2.2-Nudeong-source.tgz
+          name: MusicHub-v5.2.4-Nudeong-Source
+          path: MusicHub-v5.2.4-Nudeong-source.tgz
           if-no-files-found: error
+
+      - name: Install stable debug signing key
+        run: |
+          mkdir -p "$HOME/.android"
+          cp ci/nudeong-stable-debug.keystore "$HOME/.android/debug.keystore"
+          chmod 600 "$HOME/.android/debug.keystore"
+          keytool -list -keystore "$HOME/.android/debug.keystore" -storepass android -alias androiddebugkey >/dev/null
 
       - name: Build debug APK
         working-directory: DropboxMusicPlayer
         run: gradle --no-daemon :app:assembleDebug
 
+      - name: Verify APK signature
+        run: |
+          "$ANDROID_HOME/build-tools/36.0.0/apksigner" verify --verbose --print-certs DropboxMusicPlayer/app/build/outputs/apk/debug/app-debug.apk
+
       - name: Rename APK
-        run: cp DropboxMusicPlayer/app/build/outputs/apk/debug/app-debug.apk MusicHub-v5.2.2-Nudeong.apk
+        run: cp DropboxMusicPlayer/app/build/outputs/apk/debug/app-debug.apk MusicHub-v5.2.4-Nudeong.apk
 
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
-          name: MusicHub-v5.2.2-Nudeong-APK
-          path: MusicHub-v5.2.2-Nudeong.apk
+          name: MusicHub-v5.2.4-Nudeong-APK
+          path: MusicHub-v5.2.4-Nudeong.apk
           if-no-files-found: error
