@@ -327,6 +327,26 @@ jobs:
           grep -n 'VideoStream' DropboxMusicPlayer/app/src/main/java/com/dongjin/dropboxmusic/YoutubeStreamResolver.java
           grep -n 'retriedYoutubeId' DropboxMusicPlayer/app/src/main/java/com/dongjin/dropboxmusic/PlaybackService.java
 
+      - name: Apply v5.5 image alignment marquee and player sizing
+        run: |
+          base64 -d ci/v55/patch.b64 > v55_patch.tgz
+          echo "a290de46b51a2b067d666d77dcea98bf5d68e2abc53046c365ffe9ca30457961  v55_patch.tgz" | sha256sum -c -
+          tar -xzf v55_patch.tgz -C DropboxMusicPlayer
+          mkdir -p DropboxMusicPlayer/app/src/main/res/font
+          curl -L --fail --retry 3             https://raw.githubusercontent.com/google/fonts/main/ofl/gaegu/Gaegu-Regular.ttf             -o DropboxMusicPlayer/app/src/main/res/font/gaegu_regular.ttf
+          test -s DropboxMusicPlayer/app/src/main/res/font/gaegu_regular.ttf
+
+      - name: Verify v5.5 UI fixes
+        run: |
+          grep -n "versionCode 102" DropboxMusicPlayer/app/build.gradle
+          grep -n "versionName '5.5.0-nudeong'" DropboxMusicPlayer/app/build.gradle
+          grep -n '@font/gaegu_regular' DropboxMusicPlayer/app/src/main/res/layout/activity_player.xml
+          grep -n 'android:ellipsize="marquee"' DropboxMusicPlayer/app/src/main/res/layout/activity_player.xml
+          grep -n 'android:ellipsize="marquee"' DropboxMusicPlayer/app/src/main/res/layout/item_track.xml
+          grep -n 'android:layout_marginStart="2dp"' DropboxMusicPlayer/app/src/main/res/layout/item_track.xml
+          grep -n 'android:scaleType="fitCenter"' DropboxMusicPlayer/app/src/main/res/layout/activity_player.xml
+          test -s DropboxMusicPlayer/app/src/main/res/font/gaegu_regular.ttf
+
       - name: Verify v5.2.4 Nudeong resources and manifest
         run: |
           file DropboxMusicPlayer/app/src/main/res/drawable-nodpi/nudeong_phone.webp
@@ -340,13 +360,13 @@ jobs:
           grep -n "requestedMediaId" DropboxMusicPlayer/app/src/main/java/com/dongjin/dropboxmusic/YoutubePlayerActivity.java
 
       - name: Pack current source
-        run: tar -czf MusicHub-v5.4.0-Nudeong-source.tgz DropboxMusicPlayer
+        run: tar -czf MusicHub-v5.5.0-Nudeong-source.tgz DropboxMusicPlayer
 
       - name: Upload current source
         uses: actions/upload-artifact@v4
         with:
-          name: MusicHub-v5.4.0-Nudeong-Source
-          path: MusicHub-v5.4.0-Nudeong-source.tgz
+          name: MusicHub-v5.5.0-Nudeong-Source
+          path: MusicHub-v5.5.0-Nudeong-source.tgz
           if-no-files-found: error
 
       - name: Install stable debug signing key
@@ -365,11 +385,11 @@ jobs:
           "$ANDROID_HOME/build-tools/36.0.0/apksigner" verify --verbose --print-certs DropboxMusicPlayer/app/build/outputs/apk/debug/app-debug.apk
 
       - name: Rename APK
-        run: cp DropboxMusicPlayer/app/build/outputs/apk/debug/app-debug.apk MusicHub-v5.4.0-Nudeong.apk
+        run: cp DropboxMusicPlayer/app/build/outputs/apk/debug/app-debug.apk MusicHub-v5.5.0-Nudeong.apk
 
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
-          name: MusicHub-v5.4.0-Nudeong-APK
-          path: MusicHub-v5.4.0-Nudeong.apk
+          name: MusicHub-v5.5.0-Nudeong-APK
+          path: MusicHub-v5.5.0-Nudeong.apk
           if-no-files-found: error
