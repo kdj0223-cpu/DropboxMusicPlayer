@@ -86,14 +86,24 @@ jobs:
           echo "0bff057e855ee573fdf5d73be58e66e5707597e8611734e75558422c98f68f6b  youtube_v51.tgz" | sha256sum -c -
           tar -xzf youtube_v51.tgz -C DropboxMusicPlayer
 
+      - name: Apply Nudeong theme to v5.1
+        run: |
+          cat ci/nudeong_v52_text.part00 ci/nudeong_v52_text.part01 ci/nudeong_v52_text.part02 ci/nudeong_v52_text.part03 > nudeong_v52_text.b64
+          base64 -d nudeong_v52_text.b64 > nudeong_v52_text.tgz
+          echo "2bf79537783f998364d46fe54d1fc82bf36146aa888f811272e611418b3f4f00  nudeong_v52_text.tgz" | sha256sum -c -
+          tar -xzf nudeong_v52_text.tgz -C DropboxMusicPlayer
+          mkdir -p DropboxMusicPlayer/app/src/main/res/drawable-nodpi
+          cp ci/nudeong_phone.webp DropboxMusicPlayer/app/src/main/res/drawable-nodpi/nudeong_phone.webp
+          cp ci/nudeong_pair.webp DropboxMusicPlayer/app/src/main/res/drawable-nodpi/nudeong_pair.webp
+
       - name: Pack current source
-        run: tar -czf MusicHub-v5.1-source.tgz DropboxMusicPlayer
+        run: tar -czf MusicHub-v5.1-Nudeong-source.tgz DropboxMusicPlayer
 
       - name: Upload current source
         uses: actions/upload-artifact@v4
         with:
-          name: MusicHub-v5.1-Source
-          path: MusicHub-v5.1-source.tgz
+          name: MusicHub-v5.1-Nudeong-Source
+          path: MusicHub-v5.1-Nudeong-source.tgz
           if-no-files-found: error
 
       - name: Build debug APK
@@ -101,11 +111,11 @@ jobs:
         run: gradle --no-daemon :app:assembleDebug
 
       - name: Rename APK
-        run: cp DropboxMusicPlayer/app/build/outputs/apk/debug/app-debug.apk MusicHub-v5.1.apk
+        run: cp DropboxMusicPlayer/app/build/outputs/apk/debug/app-debug.apk MusicHub-v5.1-Nudeong.apk
 
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
-          name: MusicHub-v5.1-APK
-          path: MusicHub-v5.1.apk
+          name: MusicHub-v5.1-Nudeong-APK
+          path: MusicHub-v5.1-Nudeong.apk
           if-no-files-found: error
