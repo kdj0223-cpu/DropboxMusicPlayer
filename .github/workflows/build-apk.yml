@@ -65,14 +65,21 @@ jobs:
           echo "fe388b42b78a4fba7917c6f956aaaca6757db8cb3a5fe561da013c3d3256a410  youtube_v401_fix.tgz" | sha256sum -c -
           tar -xzf youtube_v401_fix.tgz -C DropboxMusicPlayer
 
+      - name: Apply v4.1 background and embed fix
+        run: |
+          cat ci/youtube_v41.part00 ci/youtube_v41.part01 ci/youtube_v41.part02 > youtube_v41.b64
+          base64 -d youtube_v41.b64 > youtube_v41.tgz
+          echo "6e38011eab6dab6852edf8fd38f50883ae545b09a8a73bc31b2afd8a6481868e  youtube_v41.tgz" | sha256sum -c -
+          tar -xzf youtube_v41.tgz -C DropboxMusicPlayer
+
       - name: Pack current source
-        run: tar -czf MusicHub-v4.0-source.tgz DropboxMusicPlayer
+        run: tar -czf MusicHub-v4.1-source.tgz DropboxMusicPlayer
 
       - name: Upload current source
         uses: actions/upload-artifact@v4
         with:
-          name: MusicHub-v4.0-Source
-          path: MusicHub-v4.0-source.tgz
+          name: MusicHub-v4.1-Source
+          path: MusicHub-v4.1-source.tgz
           if-no-files-found: error
 
       - name: Build debug APK
@@ -80,11 +87,11 @@ jobs:
         run: gradle --no-daemon :app:assembleDebug
 
       - name: Rename APK
-        run: cp DropboxMusicPlayer/app/build/outputs/apk/debug/app-debug.apk MusicHub-v4.0.apk
+        run: cp DropboxMusicPlayer/app/build/outputs/apk/debug/app-debug.apk MusicHub-v4.1.apk
 
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
-          name: MusicHub-v4.0-APK
-          path: MusicHub-v4.0.apk
+          name: MusicHub-v4.1-APK
+          path: MusicHub-v4.1.apk
           if-no-files-found: error
