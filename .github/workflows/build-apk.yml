@@ -86,7 +86,7 @@ jobs:
           echo "0bff057e855ee573fdf5d73be58e66e5707597e8611734e75558422c98f68f6b  youtube_v51.tgz" | sha256sum -c -
           tar -xzf youtube_v51.tgz -C DropboxMusicPlayer
 
-      - name: Apply Nudeong theme
+      - name: Apply Nudeong theme base
         run: |
           cat ci/nudeong_v52_text.part00 ci/nudeong_v52_text.part01 ci/nudeong_v52_text.part02 ci/nudeong_v52_text.part03 > nudeong_v52_text.b64
           base64 -d nudeong_v52_text.b64 > nudeong_v52_text.tgz
@@ -94,31 +94,80 @@ jobs:
           tar -xzf nudeong_v52_text.tgz -C DropboxMusicPlayer
           mkdir -p DropboxMusicPlayer/app/src/main/res/drawable-nodpi
           cp ci/nudeong_phone.webp DropboxMusicPlayer/app/src/main/res/drawable-nodpi/nudeong_phone.webp
-          cp ci/nudeong_phone.webp DropboxMusicPlayer/app/src/main/res/drawable-nodpi/nudeong_pair.webp
-          cp ci/nudeong_app_icon.webp DropboxMusicPlayer/app/src/main/res/drawable-nodpi/nudeong_app_icon.webp
+          cp ci/nudeong_pair.webp DropboxMusicPlayer/app/src/main/res/drawable-nodpi/nudeong_pair.webp
+          cp ci/nudeong_bowl.webp DropboxMusicPlayer/app/src/main/res/drawable-nodpi/nudeong_bowl.webp
+          cp ci/nudeong_bottle.webp DropboxMusicPlayer/app/src/main/res/drawable-nodpi/nudeong_bottle.webp
+          cp ci/nudeong_progress.webp DropboxMusicPlayer/app/src/main/res/drawable-nodpi/nudeong_progress.webp
 
-      - name: Apply v5.2.1 install icon playback and inset fixes
+      - name: Apply v5.2.2 varied artwork icon playback and inset fixes
         run: |
           python - <<'PY'
           from pathlib import Path
+
           root = Path("DropboxMusicPlayer")
 
           def replace(path, old, new, count=1):
               p = root / path
               s = p.read_text()
               if old not in s:
-                  raise SystemExit(f"missing pattern in {path}: {old[:80]!r}")
+                  raise SystemExit(f"missing pattern in {path}: {old[:100]!r}")
               p.write_text(s.replace(old, new, count))
 
-          replace(Path("app/build.gradle"), "versionCode 9", "versionCode 11")
-          replace(Path("app/build.gradle"), "versionName '5.1.1-nudeong'", "versionName '5.2.1-nudeong'")
+          def replace_occurrences(path, old, replacements):
+              p = root / path
+              s = p.read_text()
+              for rep in replacements:
+                  if old not in s:
+                      raise SystemExit(f"not enough occurrences in {path}: {old!r}")
+                  s = s.replace(old, rep, 1)
+              p.write_text(s)
+
+          # Version
+          replace(Path("app/build.gradle"), "versionCode 9", "versionCode 12")
+          replace(Path("app/build.gradle"), "versionName '5.1.1-nudeong'", "versionName '5.2.2-nudeong'")
+
+          # Launcher icon: use the entire original square image exactly, no face crop.
           replace(
               Path("app/src/main/AndroidManifest.xml"),
               'android:allowBackup="true"',
-              'android:allowBackup="true"\n        android:icon="@drawable/nudeong_app_icon"\n        android:roundIcon="@drawable/nudeong_app_icon"'
+              'android:allowBackup="true"\n        android:icon="@drawable/nudeong_phone"\n        android:roundIcon="@drawable/nudeong_phone"'
           )
 
+          # Use the different user-supplied Nudeong images throughout the app.
+          replace_occurrences(
+              Path("app/src/main/res/layout/activity_mode_select.xml"),
+              "@drawable/nudeong_phone",
+              [
+                  "@drawable/nudeong_phone",
+                  "@drawable/nudeong_bowl",
+                  "@drawable/nudeong_bottle",
+                  "@drawable/nudeong_pair",
+              ]
+          )
+          replace_occurrences(
+              Path("app/src/main/res/layout/activity_main.xml"),
+              "@drawable/nudeong_phone",
+              [
+                  "@drawable/nudeong_pair",
+                  "@drawable/nudeong_progress",
+                  "@drawable/nudeong_bowl",
+              ]
+          )
+          replace_occurrences(
+              Path("app/src/main/res/layout/activity_youtube_library.xml"),
+              "@drawable/nudeong_phone",
+              [
+                  "@drawable/nudeong_bottle",
+                  "@drawable/nudeong_pair",
+              ]
+          )
+          replace(Path("app/src/main/res/layout/activity_settings.xml"), "@drawable/nudeong_phone", "@drawable/nudeong_progress")
+          replace(Path("app/src/main/res/layout/activity_player.xml"), "@drawable/nudeong_phone", "@drawable/nudeong_bowl")
+          replace(Path("app/src/main/res/layout/item_track.xml"), "@drawable/nudeong_pair", "@drawable/nudeong_bottle")
+
           java_dir = root / "app/src/main/java/com/dongjin/dropboxmusic"
+
+          # Keep titles clear of the Android status bar.
           for name in ["MainActivity.java", "PlayerActivity.java", "SettingsActivity.java", "YoutubePlayerActivity.java"]:
               p = java_dir / name
               s = p.read_text()
@@ -136,6 +185,7 @@ jobs:
               if "UiInsets.applySystemBars" not in s:
                   p.write_text(s.replace(marker, marker + "\n        UiInsets.applySystemBars(findViewById(android.R.id.content));", 1))
 
+          # Dropbox: tapping the track that is already loaded must not seek to 0.
           p = java_dir / "MainActivity.java"
           s = p.read_text()
           if "Same song: preserve queue" not in s:
@@ -153,6 +203,7 @@ jobs:
                   raise SystemExit("Dropbox click insertion point missing")
               p.write_text(s.replace(needle, insert, 1))
 
+          # YouTube: same behavior for the currently loaded video/audio item.
           p = java_dir / "YoutubePlayerActivity.java"
           s = p.read_text()
           if "requestedMediaId = requestedVideoId" not in s:
@@ -205,22 +256,26 @@ jobs:
           """)
           PY
 
-      - name: Verify Nudeong resources
+      - name: Verify v5.2.2 Nudeong resources and manifest
         run: |
           file DropboxMusicPlayer/app/src/main/res/drawable-nodpi/nudeong_phone.webp
-          file DropboxMusicPlayer/app/src/main/res/drawable-nodpi/nudeong_app_icon.webp
-          grep -n "nudeong_app_icon" DropboxMusicPlayer/app/src/main/AndroidManifest.xml
+          file DropboxMusicPlayer/app/src/main/res/drawable-nodpi/nudeong_pair.webp
+          file DropboxMusicPlayer/app/src/main/res/drawable-nodpi/nudeong_bowl.webp
+          file DropboxMusicPlayer/app/src/main/res/drawable-nodpi/nudeong_bottle.webp
+          file DropboxMusicPlayer/app/src/main/res/drawable-nodpi/nudeong_progress.webp
+          grep -n 'android:icon="@drawable/nudeong_phone"' DropboxMusicPlayer/app/src/main/AndroidManifest.xml
+          grep -Rho '@drawable/nudeong_[a-z_]*' DropboxMusicPlayer/app/src/main/res/layout | sort | uniq -c
           grep -n "Same song: preserve queue" DropboxMusicPlayer/app/src/main/java/com/dongjin/dropboxmusic/MainActivity.java
           grep -n "requestedMediaId" DropboxMusicPlayer/app/src/main/java/com/dongjin/dropboxmusic/YoutubePlayerActivity.java
 
       - name: Pack current source
-        run: tar -czf MusicHub-v5.2.1-Nudeong-source.tgz DropboxMusicPlayer
+        run: tar -czf MusicHub-v5.2.2-Nudeong-source.tgz DropboxMusicPlayer
 
       - name: Upload current source
         uses: actions/upload-artifact@v4
         with:
-          name: MusicHub-v5.2.1-Nudeong-Source
-          path: MusicHub-v5.2.1-Nudeong-source.tgz
+          name: MusicHub-v5.2.2-Nudeong-Source
+          path: MusicHub-v5.2.2-Nudeong-source.tgz
           if-no-files-found: error
 
       - name: Build debug APK
@@ -228,11 +283,11 @@ jobs:
         run: gradle --no-daemon :app:assembleDebug
 
       - name: Rename APK
-        run: cp DropboxMusicPlayer/app/build/outputs/apk/debug/app-debug.apk MusicHub-v5.2.1-Nudeong.apk
+        run: cp DropboxMusicPlayer/app/build/outputs/apk/debug/app-debug.apk MusicHub-v5.2.2-Nudeong.apk
 
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
-          name: MusicHub-v5.2.1-Nudeong-APK
-          path: MusicHub-v5.2.1-Nudeong.apk
+          name: MusicHub-v5.2.2-Nudeong-APK
+          path: MusicHub-v5.2.2-Nudeong.apk
           if-no-files-found: error
