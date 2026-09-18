@@ -116,11 +116,15 @@ jobs:
           def replace_occurrences(path, old, replacements):
               p = root / path
               s = p.read_text()
-              for rep in replacements:
-                  if old not in s:
-                      raise SystemExit(f"not enough occurrences in {path}: {old!r}")
-                  s = s.replace(old, rep, 1)
-              p.write_text(s)
+              parts = s.split(old)
+              count = len(parts) - 1
+              if count <= 0:
+                  raise SystemExit(f"missing drawable occurrences in {path}: {old!r}")
+              out = [parts[0]]
+              for i in range(count):
+                  out.append(replacements[i % len(replacements)])
+                  out.append(parts[i + 1])
+              p.write_text("".join(out))
 
           # Version
           replace(Path("app/build.gradle"), "versionCode 9", "versionCode 12")
