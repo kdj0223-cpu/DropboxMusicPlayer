@@ -35,4 +35,3 @@ def clean(name, x2, y2):
 clean("nudeong_pair.webp",     0.74, 0.50)
 clean("nudeong_bowl.webp",     0.76, 0.63)
 clean("nudeong_bottle.webp",   0.75, 0.64)
-clean("nudeong_progress.webp", 0.64, 0.67)
