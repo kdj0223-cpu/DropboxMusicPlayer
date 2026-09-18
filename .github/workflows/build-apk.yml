@@ -329,7 +329,8 @@ jobs:
 
       - name: Apply v5.5 image alignment marquee and player sizing
         run: |
-          base64 -d ci/v55/patch.b64 > v55_patch.tgz
+          cat ci/v55/patch.part00 ci/v55/patch.part01 ci/v55/patch.part02 ci/v55/patch.part03 ci/v55/patch.part04 ci/v55/patch.part05 > v55_patch.b64
+          base64 -d v55_patch.b64 > v55_patch.tgz
           echo "a290de46b51a2b067d666d77dcea98bf5d68e2abc53046c365ffe9ca30457961  v55_patch.tgz" | sha256sum -c -
           tar -xzf v55_patch.tgz -C DropboxMusicPlayer
           mkdir -p DropboxMusicPlayer/app/src/main/res/font
