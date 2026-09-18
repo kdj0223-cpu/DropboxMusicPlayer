@@ -13,11 +13,10 @@ p.write_text(s)
 # Use actual Nudeong illustrations/scenes instead of Instagram screenshot rectangles.
 art_block = """private static final int[] NUDEONG_ART = {
             R.drawable.nudeong_phone,
-            R.drawable.nudeong_desk,
-            R.drawable.nudeong_couch,
-            R.drawable.nudeong_evolution,
-            R.drawable.nudeong_counter,
-            R.drawable.nudeong_snow
+            R.drawable.nudeong_pair,
+            R.drawable.nudeong_bowl,
+            R.drawable.nudeong_bottle,
+            R.drawable.nudeong_progress
     }"""
 for java_name in ["TrackAdapter.java", "YoutubeTrackAdapter.java"]:
     p = root / "app/src/main/java/com/dongjin/dropboxmusic" / java_name
