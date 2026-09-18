@@ -40,7 +40,7 @@ jobs:
 
       - name: Restore Android project
         run: |
-          cat ci/project.part00 ci/project.part01 ci/project.part02 ci/project.part03 ci/project.part04 > project.b64
+          cat ci/project.part00a ci/project.part00b0 ci/project.part00b1 ci/project.part00b2 ci/project.part00c ci/project.part00d ci/project.part01 ci/project.part02 ci/project.part03 ci/project.part04 > project.b64
           base64 -d project.b64 > project.tgz
           echo "febbb41091a109bfe7def3f7faa984dfbe5bf12bc404214cd761cf0340f1bf22  project.tgz" | sha256sum -c -
           tar -xzf project.tgz
