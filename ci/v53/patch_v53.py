@@ -16,7 +16,7 @@ art_block = """private static final int[] NUDEONG_ART = {
             R.drawable.nudeong_pair,
             R.drawable.nudeong_bowl,
             R.drawable.nudeong_bottle,
-            R.drawable.nudeong_progress
+            R.drawable.nudeong_phone
     }"""
 for java_name in ["TrackAdapter.java", "YoutubeTrackAdapter.java"]:
     p = root / "app/src/main/java/com/dongjin/dropboxmusic" / java_name
