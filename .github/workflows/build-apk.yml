@@ -45,6 +45,16 @@ jobs:
           echo "febbb41091a109bfe7def3f7faa984dfbe5bf12bc404214cd761cf0340f1bf22  project.tgz" | sha256sum -c -
           tar -xzf project.tgz
 
+      - name: Pack restored source
+        run: tar -czf restored-source.tgz DropboxMusicPlayer
+
+      - name: Upload restored source
+        uses: actions/upload-artifact@v4
+        with:
+          name: DropboxMusicPlayer-Source
+          path: restored-source.tgz
+          if-no-files-found: error
+
       - name: Build debug APK
         working-directory: DropboxMusicPlayer
         run: gradle --no-daemon :app:assembleDebug
