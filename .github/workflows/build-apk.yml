@@ -86,7 +86,7 @@ jobs:
           echo "0bff057e855ee573fdf5d73be58e66e5707597e8611734e75558422c98f68f6b  youtube_v51.tgz" | sha256sum -c -
           tar -xzf youtube_v51.tgz -C DropboxMusicPlayer
 
-      - name: Apply Nudeong theme to v5.1
+      - name: Apply Nudeong theme
         run: |
           cat ci/nudeong_v52_text.part00 ci/nudeong_v52_text.part01 ci/nudeong_v52_text.part02 ci/nudeong_v52_text.part03 > nudeong_v52_text.b64
           base64 -d nudeong_v52_text.b64 > nudeong_v52_text.tgz
@@ -94,16 +94,133 @@ jobs:
           tar -xzf nudeong_v52_text.tgz -C DropboxMusicPlayer
           mkdir -p DropboxMusicPlayer/app/src/main/res/drawable-nodpi
           cp ci/nudeong_phone.webp DropboxMusicPlayer/app/src/main/res/drawable-nodpi/nudeong_phone.webp
-          cp ci/nudeong_pair.webp DropboxMusicPlayer/app/src/main/res/drawable-nodpi/nudeong_pair.webp
+          cp ci/nudeong_phone.webp DropboxMusicPlayer/app/src/main/res/drawable-nodpi/nudeong_pair.webp
+          cp ci/nudeong_app_icon.webp DropboxMusicPlayer/app/src/main/res/drawable-nodpi/nudeong_app_icon.webp
+
+      - name: Apply v5.2.1 install icon playback and inset fixes
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          root = Path("DropboxMusicPlayer")
+
+          def replace(path, old, new, count=1):
+              p = root / path
+              s = p.read_text()
+              if old not in s:
+                  raise SystemExit(f"missing pattern in {path}: {old[:80]!r}")
+              p.write_text(s.replace(old, new, count))
+
+          replace(Path("app/build.gradle"), "versionCode 9", "versionCode 11")
+          replace(Path("app/build.gradle"), "versionName '5.1.1-nudeong'", "versionName '5.2.1-nudeong'")
+          replace(
+              Path("app/src/main/AndroidManifest.xml"),
+              'android:allowBackup="true"',
+              'android:allowBackup="true"\n        android:icon="@drawable/nudeong_app_icon"\n        android:roundIcon="@drawable/nudeong_app_icon"'
+          )
+
+          java_dir = root / "app/src/main/java/com/dongjin/dropboxmusic"
+          for name in ["MainActivity.java", "PlayerActivity.java", "SettingsActivity.java", "YoutubePlayerActivity.java"]:
+              p = java_dir / name
+              s = p.read_text()
+              old = "v.setPadding(left + bars.left, top + bars.top, right + bars.right, bottom + bars.bottom);"
+              new = "int extraTop = (int) (v.getResources().getDisplayMetrics().density * 4);\n            v.setPadding(left + bars.left, top + bars.top + extraTop, right + bars.right, bottom + bars.bottom);"
+              if old in s:
+                  p.write_text(s.replace(old, new, 1))
+
+          for name, marker in [
+              ("ModeSelectActivity.java", "setContentView(R.layout.activity_mode_select);"),
+              ("YoutubeLibraryActivity.java", "setContentView(R.layout.activity_youtube_library);")
+          ]:
+              p = java_dir / name
+              s = p.read_text()
+              if "UiInsets.applySystemBars" not in s:
+                  p.write_text(s.replace(marker, marker + "\n        UiInsets.applySystemBars(findViewById(android.R.id.content));", 1))
+
+          p = java_dir / "MainActivity.java"
+          s = p.read_text()
+          if "Same song: preserve queue" not in s:
+              needle = "        List<Track> playlist = adapter.getPlaybackList();\n"
+              insert = """        // Same song: preserve queue, exact position, and play/pause state.
+                  MediaItem current = controller.getCurrentMediaItem();
+                  if (current != null && track.path.equals(current.mediaId)) {
+                      startActivity(new Intent(this, PlayerActivity.class));
+                      return;
+                  }
+
+                  List<Track> playlist = adapter.getPlaybackList();
+          """
+              if needle not in s:
+                  raise SystemExit("Dropbox click insertion point missing")
+              p.write_text(s.replace(needle, insert, 1))
+
+          p = java_dir / "YoutubePlayerActivity.java"
+          s = p.read_text()
+          if "requestedMediaId = requestedVideoId" not in s:
+              old = """    private void buildYoutubeQueueAndPlay() {
+                  if (controller == null) return;
+                  List<YoutubeTrack> tracks = new YoutubeStore(this).getAll();
+          """
+              new = """    private void buildYoutubeQueueAndPlay() {
+                  if (controller == null) return;
+
+                  MediaItem current = controller.getCurrentMediaItem();
+                  String requestedMediaId = requestedVideoId == null ? "" : "youtube:" + requestedVideoId;
+                  if (current != null && requestedMediaId.equals(current.mediaId)) {
+                      updateAll();
+                      return;
+                  }
+
+                  List<YoutubeTrack> tracks = new YoutubeStore(this).getAll();
+          """
+              if old not in s:
+                  raise SystemExit("YouTube queue insertion point missing")
+              p.write_text(s.replace(old, new, 1))
+
+          (java_dir / "UiInsets.java").write_text("""package com.dongjin.dropboxmusic;
+
+          import android.view.View;
+
+          import androidx.core.graphics.Insets;
+          import androidx.core.view.ViewCompat;
+          import androidx.core.view.WindowInsetsCompat;
+
+          public final class UiInsets {
+              private UiInsets() {}
+
+              public static void applySystemBars(View root) {
+                  final int left = root.getPaddingLeft();
+                  final int top = root.getPaddingTop();
+                  final int right = root.getPaddingRight();
+                  final int bottom = root.getPaddingBottom();
+                  ViewCompat.setOnApplyWindowInsetsListener(root, (v, insets) -> {
+                      Insets bars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
+                      int extraTop = (int) (v.getResources().getDisplayMetrics().density * 4);
+                      v.setPadding(left + bars.left, top + bars.top + extraTop,
+                              right + bars.right, bottom + bars.bottom);
+                      return insets;
+                  });
+                  ViewCompat.requestApplyInsets(root);
+              }
+          }
+          """)
+          PY
+
+      - name: Verify Nudeong resources
+        run: |
+          file DropboxMusicPlayer/app/src/main/res/drawable-nodpi/nudeong_phone.webp
+          file DropboxMusicPlayer/app/src/main/res/drawable-nodpi/nudeong_app_icon.webp
+          grep -n "nudeong_app_icon" DropboxMusicPlayer/app/src/main/AndroidManifest.xml
+          grep -n "Same song: preserve queue" DropboxMusicPlayer/app/src/main/java/com/dongjin/dropboxmusic/MainActivity.java
+          grep -n "requestedMediaId" DropboxMusicPlayer/app/src/main/java/com/dongjin/dropboxmusic/YoutubePlayerActivity.java
 
       - name: Pack current source
-        run: tar -czf MusicHub-v5.1-Nudeong-source.tgz DropboxMusicPlayer
+        run: tar -czf MusicHub-v5.2.1-Nudeong-source.tgz DropboxMusicPlayer
 
       - name: Upload current source
         uses: actions/upload-artifact@v4
         with:
-          name: MusicHub-v5.1-Nudeong-Source
-          path: MusicHub-v5.1-Nudeong-source.tgz
+          name: MusicHub-v5.2.1-Nudeong-Source
+          path: MusicHub-v5.2.1-Nudeong-source.tgz
           if-no-files-found: error
 
       - name: Build debug APK
@@ -111,11 +228,11 @@ jobs:
         run: gradle --no-daemon :app:assembleDebug
 
       - name: Rename APK
-        run: cp DropboxMusicPlayer/app/build/outputs/apk/debug/app-debug.apk MusicHub-v5.1-Nudeong.apk
+        run: cp DropboxMusicPlayer/app/build/outputs/apk/debug/app-debug.apk MusicHub-v5.2.1-Nudeong.apk
 
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
-          name: MusicHub-v5.1-Nudeong-APK
-          path: MusicHub-v5.1-Nudeong.apk
+          name: MusicHub-v5.2.1-Nudeong-APK
+          path: MusicHub-v5.2.1-Nudeong.apk
           if-no-files-found: error
