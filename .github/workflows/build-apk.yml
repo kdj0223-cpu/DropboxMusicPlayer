@@ -2,7 +2,7 @@ name: Build Android APK
 
 on:
   push:
-    branches: [ main ]
+    branches: [ main, v5.5.3-playlist-bulk-delete ]
   workflow_dispatch:
 
 permissions:
@@ -348,6 +348,20 @@ jobs:
           grep -n 'android:scaleType="fitCenter"' DropboxMusicPlayer/app/src/main/res/layout/activity_player.xml
           test -s DropboxMusicPlayer/app/src/main/res/font/gaegu_regular.ttf
 
+      - name: Apply v5.5.3 YouTube playlist import and bulk delete
+        run: |
+          base64 -d ci/v553/features.patch.gz.b64 | gzip -d > v553.patch
+          patch -p1 -d DropboxMusicPlayer < v553.patch
+
+      - name: Verify v5.5.3 requested-only changes
+        run: |
+          grep -n "versionCode 105" DropboxMusicPlayer/app/build.gradle
+          grep -n "versionName '5.5.3-nudeong'" DropboxMusicPlayer/app/build.gradle
+          grep -n "fromPlaylistUrl" DropboxMusicPlayer/app/src/main/java/com/dongjin/dropboxmusic/YoutubeApi.java
+          grep -n "selectAllShown" DropboxMusicPlayer/app/src/main/java/com/dongjin/dropboxmusic/YoutubeTrackAdapter.java
+          grep -n "removeAll" DropboxMusicPlayer/app/src/main/java/com/dongjin/dropboxmusic/YoutubeStore.java
+          grep -n 'android:id="@+id/btnTrackMore"' DropboxMusicPlayer/app/src/main/res/layout/item_track.xml
+
       - name: Verify v5.2.4 Nudeong resources and manifest
         run: |
           file DropboxMusicPlayer/app/src/main/res/drawable-nodpi/nudeong_phone.webp
@@ -361,13 +375,13 @@ jobs:
           grep -n "requestedMediaId" DropboxMusicPlayer/app/src/main/java/com/dongjin/dropboxmusic/YoutubePlayerActivity.java
 
       - name: Pack current source
-        run: tar -czf MusicHub-v5.5.0-Nudeong-source.tgz DropboxMusicPlayer
+        run: tar -czf MusicHub-v5.5.3-Nudeong-source.tgz DropboxMusicPlayer
 
       - name: Upload current source
         uses: actions/upload-artifact@v4
         with:
-          name: MusicHub-v5.5.0-Nudeong-Source
-          path: MusicHub-v5.5.0-Nudeong-source.tgz
+          name: MusicHub-v5.5.3-Nudeong-Source
+          path: MusicHub-v5.5.3-Nudeong-source.tgz
           if-no-files-found: error
 
       - name: Install stable debug signing key
@@ -386,11 +400,11 @@ jobs:
           "$ANDROID_HOME/build-tools/36.0.0/apksigner" verify --verbose --print-certs DropboxMusicPlayer/app/build/outputs/apk/debug/app-debug.apk
 
       - name: Rename APK
-        run: cp DropboxMusicPlayer/app/build/outputs/apk/debug/app-debug.apk MusicHub-v5.5.0-Nudeong.apk
+        run: cp DropboxMusicPlayer/app/build/outputs/apk/debug/app-debug.apk MusicHub-v5.5.3-Nudeong.apk
 
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
-          name: MusicHub-v5.5.0-Nudeong-APK
-          path: MusicHub-v5.5.0-Nudeong.apk
+          name: MusicHub-v5.5.3-Nudeong-APK
+          path: MusicHub-v5.5.3-Nudeong.apk
           if-no-files-found: error
