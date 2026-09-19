@@ -348,6 +348,29 @@ jobs:
           grep -n 'android:scaleType="fitCenter"' DropboxMusicPlayer/app/src/main/res/layout/activity_player.xml
           test -s DropboxMusicPlayer/app/src/main/res/font/gaegu_regular.ttf
 
+      - name: Apply v5.6 final UI favorites queue and 11 Nudeong assets
+        run: |
+          cat ci/v56b/patch.part00 ci/v56b/patch.part01 ci/v56b/patch.part02 ci/v56b/patch.part03 ci/v56b/patch.part04 ci/v56b/patch.part05 > v56_patch.b64
+          base64 -d v56_patch.b64 > v56_patch.tgz
+          echo "742da878fc080c65abffe7835c51261f9df6b6a530650aad748dee00e50b0276  v56_patch.tgz" | sha256sum -c -
+          tar -xzf v56_patch.tgz -C DropboxMusicPlayer
+          python DropboxMusicPlayer/v56_generate_assets.py
+          rm -f DropboxMusicPlayer/v56_generate_assets.py DropboxMusicPlayer/v56_assets_sheet.jpg
+
+      - name: Verify v5.6 final fixes
+        run: |
+          grep -n "versionCode 103" DropboxMusicPlayer/app/build.gradle
+          grep -n "versionName '5.6.0-nudeong'" DropboxMusicPlayer/app/build.gradle
+          grep -n 'android:id="@+id/queueRecycler"' DropboxMusicPlayer/app/src/main/res/layout/dialog_queue.xml
+          grep -n 'android:text="1.0x"' DropboxMusicPlayer/app/src/main/res/layout/activity_player.xml
+          grep -n 'android:singleLine="true"' DropboxMusicPlayer/app/src/main/res/layout/activity_player.xml
+          grep -n 'favorite_only' DropboxMusicPlayer/app/src/main/java/com/dongjin/dropboxmusic/YoutubeLibraryActivity.java
+          grep -n 'favorite_only' DropboxMusicPlayer/app/src/main/java/com/dongjin/dropboxmusic/YoutubePlayerActivity.java
+          grep -n 'setFullQueue' DropboxMusicPlayer/app/src/main/java/com/dongjin/dropboxmusic/QueueAdapter.java
+          test -s DropboxMusicPlayer/app/src/main/res/drawable-nodpi/nudeong_01_phone.png
+          test -s DropboxMusicPlayer/app/src/main/res/drawable-nodpi/nudeong_11_year2026.png
+          find DropboxMusicPlayer/app/src/main/res/drawable-nodpi -name 'nudeong_*.png' | wc -l
+
       - name: Verify v5.2.4 Nudeong resources and manifest
         run: |
           file DropboxMusicPlayer/app/src/main/res/drawable-nodpi/nudeong_phone.webp
@@ -361,13 +384,13 @@ jobs:
           grep -n "requestedMediaId" DropboxMusicPlayer/app/src/main/java/com/dongjin/dropboxmusic/YoutubePlayerActivity.java
 
       - name: Pack current source
-        run: tar -czf MusicHub-v5.5.0-Nudeong-source.tgz DropboxMusicPlayer
+        run: tar -czf MusicHub-v5.6.0-Nudeong-source.tgz DropboxMusicPlayer
 
       - name: Upload current source
         uses: actions/upload-artifact@v4
         with:
-          name: MusicHub-v5.5.0-Nudeong-Source
-          path: MusicHub-v5.5.0-Nudeong-source.tgz
+          name: MusicHub-v5.6.0-Nudeong-Source
+          path: MusicHub-v5.6.0-Nudeong-source.tgz
           if-no-files-found: error
 
       - name: Install stable debug signing key
@@ -386,11 +409,11 @@ jobs:
           "$ANDROID_HOME/build-tools/36.0.0/apksigner" verify --verbose --print-certs DropboxMusicPlayer/app/build/outputs/apk/debug/app-debug.apk
 
       - name: Rename APK
-        run: cp DropboxMusicPlayer/app/build/outputs/apk/debug/app-debug.apk MusicHub-v5.5.0-Nudeong.apk
+        run: cp DropboxMusicPlayer/app/build/outputs/apk/debug/app-debug.apk MusicHub-v5.6.0-Nudeong.apk
 
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
-          name: MusicHub-v5.5.0-Nudeong-APK
-          path: MusicHub-v5.5.0-Nudeong.apk
+          name: MusicHub-v5.6.0-Nudeong-APK
+          path: MusicHub-v5.6.0-Nudeong.apk
           if-no-files-found: error
