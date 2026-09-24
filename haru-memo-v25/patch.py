@@ -45,7 +45,7 @@ replace(service,'''Log.e("HaruMemo", "Recorder start failed", ex);''',
 '''Log.e("HaruMemo", "Recorder start failed", ex);
             prefs().edit().putString("routine_last_error","녹음 시작 실패: "+ex.getClass().getSimpleName()).apply();''')
 replace(service,'"삼성 루틴+ 버튼 동작과 하루메모 빠른 녹음을 연결하세요"','"볼륨 아래 두 번 누르기 · 다시 두 번 누르면 저장"')
-replace(service,'"루틴+ 버튼을 다시 누르거나 알림에서 종료·저장"','"다시 볼륨 아래 두 번 누르거나 알림에서 저장"')
+replace(service,'"루틴+ 버튼이나 알림으로 종료·저장"','"다시 볼륨 아래 두 번 누르거나 알림에서 저장"')
 quick=j/'QuickRecordActivity.java'
 replace(quick,'''if (VoiceRecorderService.isArmedInProcess()) {
             try {''','''if (VoiceRecorderService.isArmedInProcess()) {
