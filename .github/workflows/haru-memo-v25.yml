@@ -1,0 +1,58 @@
+name: Build HaruMemo 2.5 Samsung shortcut APK
+on:
+  push:
+    branches: [haru-memo-v25-phone-only-20260925]
+    paths:
+      - 'haru-memo-v25/**'
+      - '.github/workflows/haru-memo-v25.yml'
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+      - name: Restore HaruMemo 2.0 source
+        run: |
+          mkdir -p harumemo/workspace
+          cat haru-memo-v2/part_{00..05}.txt | base64 -d > /tmp/h2.tar.xz
+          echo '64e40e5b73f7dc1a328c01b9df77b90f1f4285c1a3989fd54b32b3f77a659c6d  /tmp/h2.tar.xz' | sha256sum -c
+          tar -xJf /tmp/h2.tar.xz -C harumemo/workspace
+      - name: Add HaruMemo 2.1 editable titles and recording
+        run: |
+          cat haru-memo-v21/patch_{00..02}.txt | base64 -d > /tmp/v21.py.gz
+          echo 'a74ce7f1b1ffdb4db7daa79d6ba8ad590b09d5d473df43245cae803ace05f752  /tmp/v21.py.gz' | sha256sum -c
+          gzip -cd /tmp/v21.py.gz > /tmp/v21.py
+          python3 /tmp/v21.py harumemo/workspace
+      - name: Configure phone-only double-press shortcut
+        run: |
+          python3 haru-memo-v23/patch.py harumemo/workspace
+          python3 haru-memo-v25/patch.py harumemo/workspace
+          grep -q "app.harume.memo.v25" harumemo/workspace/app/build.gradle
+          grep -q "haru_record_toggle" harumemo/workspace/app/src/main/res/xml/shortcuts.xml
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+      - name: Install Android SDK
+        run: |
+          echo "ANDROID_HOME=${ANDROID_HOME:-/usr/local/lib/android/sdk}" >> "$GITHUB_ENV"
+          export PATH="$(dirname "$(find "$ANDROID_HOME/cmdline-tools" -type f -name sdkmanager | sort -V | tail -1)"):$PATH"
+          yes | sdkmanager --licenses >/dev/null || true
+          sdkmanager --install "platforms;android-35" "build-tools;35.0.0"
+      - uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: '8.9'
+      - name: Build APK
+        run: gradle -p harumemo/workspace --no-daemon :app:assembleDebug
+      - name: APK and manifest validation
+        run: |
+          test -s harumemo/workspace/app/build/outputs/apk/debug/app-debug.apk
+          unzip -t harumemo/workspace/app/build/outputs/apk/debug/app-debug.apk | tail -1
+          "$ANDROID_HOME/build-tools/35.0.0/aapt" dump badging harumemo/workspace/app/build/outputs/apk/debug/app-debug.apk | grep "package: name='app.harume.memo.v25'"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: HaruMemo-2.5-apk
+          path: harumemo/workspace/app/build/outputs/apk/debug/app-debug.apk
+          if-no-files-found: error
