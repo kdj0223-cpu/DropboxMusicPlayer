@@ -1,0 +1,43 @@
+name: Build HaruMemo v2 APK
+on:
+  push:
+    branches:
+      - haru-memo-v2-20260924
+    paths:
+      - haru-memo/v2_payload_*.txt
+      - .github/workflows/haru-memo-v2.yml
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 28
+    steps:
+      - uses: actions/checkout@v4
+      - name: Restore v2 project
+        run: |
+          mkdir -p haru-memo/v2workspace
+          cat haru-memo/v2_payload_*.txt | base64 -d | tar -xJ -C haru-memo/v2workspace
+          test -f haru-memo/v2workspace/app/src/main/java/app/harume/memo/MainActivity.java
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+      - name: Install Android platform
+        run: |
+          echo "ANDROID_HOME=${ANDROID_HOME:-/usr/local/lib/android/sdk}" >> "$GITHUB_ENV"
+          export PATH="$(dirname "$(find "$ANDROID_HOME/cmdline-tools" -type f -name sdkmanager | sort -V | tail -1)"):$PATH"
+          yes | sdkmanager --licenses >/dev/null || true
+          sdkmanager --install "platforms;android-35" "build-tools;35.0.0"
+      - uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: '8.9'
+      - name: Compile debug APK
+        run: gradle -p haru-memo/v2workspace --no-daemon :app:assembleDebug
+      - name: Confirm APK exists
+        run: test -s haru-memo/v2workspace/app/build/outputs/apk/debug/app-debug.apk
+      - uses: actions/upload-artifact@v4
+        with:
+          name: HaruMemo-v2-apk
+          path: haru-memo/v2workspace/app/build/outputs/apk/debug/app-debug.apk
+          if-no-files-found: error
