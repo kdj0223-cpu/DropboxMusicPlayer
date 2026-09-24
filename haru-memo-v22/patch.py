@@ -290,9 +290,6 @@ diagnostics = '''        text.append("\\n\\n[입력 진단]");
         if (!mediaError.isEmpty()) text.append("\\n미디어 세션 오류: ").append(mediaError);
 '''
 s = s.replace(anchor, diagnostics + anchor)
-s = s.replace('if (VoiceRecorderService.isArmedInProcess()) text.append("✓ 녹음 대기 서비스 실행 중");',
-'''if (VoiceRecorderService.isArmedInProcess()) text.append("✓ 녹음 대기 서비스 실행 중");
-        else prefs.edit().putBoolean("media_session_ready",false).apply();''')
 s = s.replace('TextView explanation = text("켜기 전에 마이크·알림·접근성 권한을 허용하세요. 앱이 켜져 있을 때 녹음 대기 서비스를 먼저 시작합니다.",',
 '''TextView explanation = text("마이크와 알림 권한이 필요합니다. 접근성 방식과 미디어 세션 방식을 동시에 시도하며, 일부 휴대폰에서는 화면을 끄면 모두 차단될 수 있습니다. 미디어 세션이 선택되면 음악 재생 중 볼륨 버튼 동작에 영향을 줄 수 있습니다.",''')
 s = s.replace('        gap(page, 20);\n        page.addView(text("작동에 필요한 권한"', '''        gap(page, 10);
