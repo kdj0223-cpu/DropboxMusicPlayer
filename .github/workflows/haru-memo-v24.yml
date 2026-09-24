@@ -30,6 +30,10 @@ jobs:
           python3 haru-memo-v23/patch.py harumemo/workspace
           grep -q "app.harume.memo.v23" harumemo/workspace/app/build.gradle
           grep -q "haru_record_toggle" harumemo/workspace/app/src/main/res/xml/shortcuts.xml
+      - name: Normalize prior shortcut labels
+        run: |
+          sed -i 's/삼성 루틴+ 버튼 동작과 하루메모 빠른 녹음을 연결하세요/삼성 루틴+에서 볼륨 버튼 → 하루메모 빠른 녹음 연결/g' harumemo/workspace/app/src/main/java/app/harume/memo/VoiceRecorderService.java
+          sed -i 's/루틴+ 버튼이나 알림으로 종료·저장/루틴+ 버튼을 다시 누르거나 알림에서 종료·저장/g' harumemo/workspace/app/src/main/java/app/harume/memo/VoiceRecorderService.java
       - name: Add Android system long-press callback (ADB grant required)
         run: |
           cat haru-memo-v24/patch_{00..02}.txt | base64 -d | gzip -cd > /tmp/v24.py
