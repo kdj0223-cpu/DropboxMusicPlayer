@@ -182,7 +182,7 @@ public final class RecordingAccessibilityService extends AccessibilityService {
         } else if (e.getAction() == KeyEvent.ACTION_UP) {
             if (down && !fired && e.getEventTime() - startAt >= 850) fire();
             clearPress();
-        } else if (e.getAction() == KeyEvent.ACTION_CANCEL) clearPress();
+        }
         // Do not consume a DOWN but pass its UP (or vice versa).
         // Both are passed through; volume may change while recording shortcut operates.
         return false;
