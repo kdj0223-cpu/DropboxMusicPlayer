@@ -1,0 +1,40 @@
+name: Build HaruMemo APK
+on:
+  push:
+    branches:
+      - haru-memo-apk-20260924
+    paths:
+      - haru-memo/payload_*.txt
+      - .github/workflows/haru-memo-apk.yml
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+      - name: Restore HaruMemo source
+        run: |
+          mkdir -p haru-memo/workspace
+          cat haru-memo/payload_{1..4}.txt | base64 -d | tar -xJ -C haru-memo/workspace
+          test -f haru-memo/workspace/app/src/main/java/app/harume/memo/MainActivity.java
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+      - uses: android-actions/setup-android@v3
+      - name: Install Android platform
+        run: sdkmanager --install "platforms;android-35" "build-tools;35.0.0"
+      - uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: '8.9'
+      - name: Build debug APK
+        run: gradle -p haru-memo/workspace --no-daemon :app:assembleDebug
+      - name: Verify APK
+        run: test -s haru-memo/workspace/app/build/outputs/apk/debug/app-debug.apk
+      - uses: actions/upload-artifact@v4
+        with:
+          name: HaruMemo-debug-apk
+          path: haru-memo/workspace/app/build/outputs/apk/debug/app-debug.apk
+          if-no-files-found: error
