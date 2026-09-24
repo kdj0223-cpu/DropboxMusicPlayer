@@ -1,10 +1,10 @@
-name: Build HaruMemo 2.0 APK
+name: Build HaruMemo 2.1 APK
 on:
   push:
     branches:
-      - haru-memo-v2-20260924
+      - haru-memo-v21-20260924
     paths:
-      - haru-memo-v2/part_*.txt
+      - haru-memo-v21/patch_*.txt
       - .github/workflows/haru-memo-apk.yml
   workflow_dispatch:
 
@@ -21,6 +21,13 @@ jobs:
           echo '64e40e5b73f7dc1a328c01b9df77b90f1f4285c1a3989fd54b32b3f77a659c6d  /tmp/harumemo2.tar.xz' | sha256sum --check
           tar -xJf /tmp/harumemo2.tar.xz -C haru-memo-v2/workspace
           test -f haru-memo-v2/workspace/app/src/main/java/app/harume/memo/MainActivity.java
+      - name: Apply redesigned shortcut and title editor
+        run: |
+          cat haru-memo-v21/patch_{00..02}.txt | base64 -d > /tmp/patch_v21.py.gz
+          echo 'a74ce7f1b1ffdb4db7daa79d6ba8ad590b09d5d473df43245cae803ace05f752  /tmp/patch_v21.py.gz' | sha256sum --check
+          gzip -cd /tmp/patch_v21.py.gz > /tmp/patch_v21.py
+          python3 /tmp/patch_v21.py haru-memo-v2/workspace
+          grep -q "app.harume.memo.v21" haru-memo-v2/workspace/app/build.gradle
       - uses: actions/setup-java@v4
         with:
           distribution: temurin
@@ -40,6 +47,6 @@ jobs:
         run: test -s haru-memo-v2/workspace/app/build/outputs/apk/debug/app-debug.apk
       - uses: actions/upload-artifact@v4
         with:
-          name: HaruMemo-v2-apk
+          name: HaruMemo-v21-apk
           path: haru-memo-v2/workspace/app/build/outputs/apk/debug/app-debug.apk
           if-no-files-found: error
