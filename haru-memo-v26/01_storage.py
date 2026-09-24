@@ -259,10 +259,10 @@ s=s.replace('    void remove(long id) { getWritableDatabase().delete("memo", "id
 store.write_text(s,encoding='utf-8')
 
 s=service.read_text(encoding='utf-8')
-old='db.attachAudio(memoId, recordingFile.getAbsolutePath(), duration);'
+old='db.attachAudio(memoId, recordingFile.getAbsolutePath(), lengthMs);'
 assert old in s
 s=s.replace(old,'''String saved=MemoVault.publishAudio(this,recordingFile);
-            db.attachAudio(memoId,saved==null?recordingFile.getAbsolutePath():saved,duration);''')
+            db.attachAudio(memoId,saved==null?recordingFile.getAbsolutePath():saved,lengthMs);''')
 service.write_text(s,encoding='utf-8')
 
 s=activity.read_text(encoding='utf-8')
