@@ -50,15 +50,14 @@ jobs:
           patch --fuzz=0 -p1 -d harumemo/workspace -i /tmp/HaruMemo210.patch
           python3 haru-memo-v211/patch.py harumemo/workspace
           python3 haru-memo-v212/patch.py harumemo/workspace
-          cat haru-memo-v213/patch_{00..01}.txt | base64 -d > /tmp/HaruMemo213.patch.gz
-          echo '24d759966142e676575f489b4283160464db5fbbb0c699ba08c0b866ce251958  /tmp/HaruMemo213.patch.gz' | sha256sum -c
-          gzip -dc /tmp/HaruMemo213.patch.gz > /tmp/HaruMemo213.patch
-          patch --fuzz=0 -p1 -d harumemo/workspace -i /tmp/HaruMemo213.patch
+          cat haru-memo-v213/repair_{00..01}.txt | base64 -d > /tmp/v213_patch.py.gz
+          echo '2be39ccc2e7837a1ff7337c8c2ce05a54856b57120f78c75c0371f9dc41d8c25  /tmp/v213_patch.py.gz' | sha256sum -c
+          gzip -dc /tmp/v213_patch.py.gz > /tmp/v213_patch.py
+          python3 /tmp/v213_patch.py harumemo/workspace
           grep -q "app.harume.memo.v213" harumemo/workspace/app/build.gradle
-          grep -q "boolean showStrip = running && (tab != TAB_WRITE || compactWhileTyping)" harumemo/workspace/app/src/main/java/app/harume/memo/MainActivity.java
-          grep -q "getCurrentWindowMetrics" harumemo/workspace/app/src/main/java/app/harume/memo/MainActivity.java
-          grep -q "routine_last_result_id" harumemo/workspace/app/src/main/java/app/harume/memo/QuickRecordActivity.java
-          grep -q "acknowledge" harumemo/workspace/app/src/main/java/app/harume/memo/VoiceRecorderService.java
+          grep -q "dispatch immediately from onCreate" harumemo/workspace/app/src/main/java/app/harume/memo/QuickRecordActivity.java
+          grep -q "screenHeight-rootHeight" harumemo/workspace/app/src/main/java/app/harume/memo/MainActivity.java
+          grep -q "recordButton.setVisibility(View.GONE)" harumemo/workspace/app/src/main/java/app/harume/memo/MainActivity.java
           grep -q "app.harume.memo.v213" harumemo/workspace/app/src/main/res/xml/shortcuts.xml
           grep -q "imeIsActuallyVisible" harumemo/workspace/app/src/main/java/app/harume/memo/MainActivity.java
           grep -q "imeWatcher" harumemo/workspace/app/src/main/java/app/harume/memo/MainActivity.java
