@@ -14,7 +14,7 @@ replace(gradle,"versionName '2.11'","versionName '2.12'")
 manifest=root/'app/src/main/AndroidManifest.xml'
 replace(manifest,'android:label="하루메모 2.11"','android:label="하루메모 2.12"')
 shortcuts=root/'app/src/main/res/xml/shortcuts.xml'
-replace(shortcuts,"app.harume.memo.v211","app.harume.memo.v212")
+replace(shortcuts,"app.harume.memo.v210","app.harume.memo.v212")
 theme=root/'app/src/main/res/values/styles.xml'
 replace(theme,'<item name="android:windowIsTranslucent">true</item>','<item name="android:windowIsTranslucent">false</item>')
 replace(theme,'<item name="android:windowBackground">@android:color/transparent</item>',
@@ -44,7 +44,7 @@ import android.widget.Toast;
  */
 public final class QuickRecordActivity extends Activity {
     private static final int ASK_MIC = 800;
-    private static final long TIMEOUT_MS = 6000;
+    private static final long TIMEOUT_MS = 7000;
     private final Handler handler = new Handler(Looper.getMainLooper());
     private SharedPreferences prefs;
     private TextView message;
@@ -148,9 +148,9 @@ public final class QuickRecordActivity extends Activity {
             }
             return;
         }
-        if (SystemClock.elapsedRealtime()-dispatchedAt >= TIMEOUT_MS) {
+        if (SystemClock.elapsedRealtime()-dispatchedAt >= (stopping ? 16000 : TIMEOUT_MS)) {
             prefs.edit().putString("routine_last_error",
-                "루틴 실행은 감지했지만 6초 내 녹음 서비스 응답이 없습니다. 잠금화면 제한 가능성.").commit();
+                "루틴 실행은 감지했지만 제한 시간 내 녹음 서비스 응답이 없습니다. 잠금화면 제한 가능성.").commit();
             fail("녹음이 시작되지 않았어요. 화면 잠금 상태에서 실행이 제한될 수 있어요.");
             return;
         }
