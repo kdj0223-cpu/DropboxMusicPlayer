@@ -1,0 +1,36 @@
+name: Export HaruMemo 2.7 source
+on:
+  push:
+    branches: [haru-memo-v28-undo-redo-20260925]
+    paths: ['.github/workflows/haru-memo-v28-export.yml']
+  workflow_dispatch:
+jobs:
+  export-source:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Assemble v2.7
+        run: |
+          set -euo pipefail
+          mkdir -p work
+          cat haru-memo-v2/part_{00..05}.txt | base64 -d > /tmp/v20.tar.xz
+          echo '64e40e5b73f7dc1a328c01b9df77b90f1f4285c1a3989fd54b32b3f77a659c6d  /tmp/v20.tar.xz' | sha256sum -c
+          tar -xJf /tmp/v20.tar.xz -C work
+          cat haru-memo-v21/patch_{00..02}.txt | base64 -d > /tmp/v21.gz
+          echo 'a74ce7f1b1ffdb4db7daa79d6ba8ad590b09d5d473df43245cae803ace05f752  /tmp/v21.gz' | sha256sum -c
+          gzip -dc /tmp/v21.gz > /tmp/v21.py
+          python3 /tmp/v21.py work
+          python3 haru-memo-v23/patch.py work
+          python3 haru-memo-v25/patch.py work
+          python3 haru-memo-v26/01_storage.py work
+          python3 haru-memo-v26/02_recordings_ui.py work
+          python3 haru-memo-v26/03_title_settings.py work
+          cat haru-memo-v27/patch_{00..03}.txt | base64 -d > /tmp/v27.gz
+          echo 'fc3e63fa32b0d746dafceb058038e48654acdf9bf1fb096508e69831a80b40c4  /tmp/v27.gz' | sha256sum -c
+          gzip -dc /tmp/v27.gz > /tmp/v27.patch
+          patch --fuzz=0 -p1 -d work -i /tmp/v27.patch
+          tar -czf /tmp/harumemo27source.tar.gz -C work .
+      - uses: actions/upload-artifact@v4
+        with:
+          name: HaruMemo-v27-source
+          path: /tmp/harumemo27source.tar.gz
