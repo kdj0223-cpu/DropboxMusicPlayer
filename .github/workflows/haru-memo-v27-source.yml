@@ -1,0 +1,32 @@
+name: Prepare HaruMemo 2.6 source for UI fixes
+on:
+  push:
+    branches: [haru-memo-v27-20260925]
+    paths: ['.github/workflows/haru-memo-v27-source.yml']
+  workflow_dispatch:
+jobs:
+  source:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Reconstruct existing source
+        run: |
+          mkdir -p harumemo/workspace
+          cat haru-memo-v2/part_{00..05}.txt | base64 -d > /tmp/h2.tar.xz
+          echo '64e40e5b73f7dc1a328c01b9df77b90f1f4285c1a3989fd54b32b3f77a659c6d  /tmp/h2.tar.xz' | sha256sum -c
+          tar -xJf /tmp/h2.tar.xz -C harumemo/workspace
+          cat haru-memo-v21/patch_{00..02}.txt | base64 -d > /tmp/v21.py.gz
+          echo 'a74ce7f1b1ffdb4db7daa79d6ba8ad590b09d5d473df43245cae803ace05f752  /tmp/v21.py.gz' | sha256sum -c
+          gzip -cd /tmp/v21.py.gz > /tmp/v21.py
+          python3 /tmp/v21.py harumemo/workspace
+          python3 haru-memo-v23/patch.py harumemo/workspace
+          python3 haru-memo-v25/patch.py harumemo/workspace
+          python3 haru-memo-v26/01_storage.py harumemo/workspace
+          python3 haru-memo-v26/02_recordings_ui.py harumemo/workspace
+          python3 haru-memo-v26/03_title_settings.py harumemo/workspace
+          mkdir -p /tmp/out
+          tar -czf /tmp/out/HaruMemo26_src.tar.gz -C harumemo/workspace .
+      - uses: actions/upload-artifact@v4
+        with:
+          name: HaruMemo26-reconstructed-source
+          path: /tmp/out/HaruMemo26_src.tar.gz
