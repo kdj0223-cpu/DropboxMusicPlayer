@@ -59,7 +59,7 @@ jobs:
           grep -q "getCurrentWindowMetrics" harumemo/workspace/app/src/main/java/app/harume/memo/MainActivity.java
           grep -q "routine_last_result_id" harumemo/workspace/app/src/main/java/app/harume/memo/QuickRecordActivity.java
           grep -q "acknowledge" harumemo/workspace/app/src/main/java/app/harume/memo/VoiceRecorderService.java
-          grep -q "app.harume.memo.v212" harumemo/workspace/app/src/main/res/xml/shortcuts.xml
+          grep -q "app.harume.memo.v213" harumemo/workspace/app/src/main/res/xml/shortcuts.xml
           grep -q "imeIsActuallyVisible" harumemo/workspace/app/src/main/java/app/harume/memo/MainActivity.java
           grep -q "imeWatcher" harumemo/workspace/app/src/main/java/app/harume/memo/MainActivity.java
           grep -q "bodyEditor.setOnFocusChangeListener" harumemo/workspace/app/src/main/java/app/harume/memo/MainActivity.java
