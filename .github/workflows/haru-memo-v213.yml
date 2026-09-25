@@ -50,12 +50,9 @@ jobs:
           patch --fuzz=0 -p1 -d harumemo/workspace -i /tmp/HaruMemo210.patch
           python3 haru-memo-v211/patch.py harumemo/workspace
           python3 haru-memo-v212/patch.py harumemo/workspace
-          cat haru-memo-v213/repair_{00..01}.txt | base64 -d > /tmp/v213_patch.py.gz
-          echo '2be39ccc2e7837a1ff7337c8c2ce05a54856b57120f78c75c0371f9dc41d8c25  /tmp/v213_patch.py.gz' | sha256sum -c
-          gzip -dc /tmp/v213_patch.py.gz > /tmp/v213_patch.py
-          python3 /tmp/v213_patch.py harumemo/workspace
+          python3 haru-memo-v213/repair.py harumemo/workspace
           grep -q "app.harume.memo.v213" harumemo/workspace/app/build.gradle
-          grep -q "dispatch immediately from onCreate" harumemo/workspace/app/src/main/java/app/harume/memo/QuickRecordActivity.java
+          grep -q "startForegroundService(cmd)" harumemo/workspace/app/src/main/java/app/harume/memo/QuickRecordActivity.java
           grep -q "screenHeight-rootHeight" harumemo/workspace/app/src/main/java/app/harume/memo/MainActivity.java
           grep -q "recordButton.setVisibility(View.GONE)" harumemo/workspace/app/src/main/java/app/harume/memo/MainActivity.java
           grep -q "app.harume.memo.v213" harumemo/workspace/app/src/main/res/xml/shortcuts.xml
