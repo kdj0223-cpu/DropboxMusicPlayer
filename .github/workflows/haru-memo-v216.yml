@@ -63,6 +63,8 @@ jobs:
           echo '92f6a4448194fba53181e24a1b449e1b33689b645aa79dd8cca4a8f93c1ee913  /tmp/HaruMemo216.patch.xz' | sha256sum -c
           xz -dc /tmp/HaruMemo216.patch.xz > /tmp/HaruMemo216.patch
           patch --fuzz=0 -p1 -d harumemo/workspace -i /tmp/HaruMemo216.patch
+          python3 haru-memo-v216/restore_import_folders.py harumemo/workspace
+          grep -q 'return activeFolderId>0?activeFolderId:MemoStore.ALL_FOLDERS;' harumemo/workspace/app/src/main/java/app/harume/memo/FoldersPanel.java
           grep -q "app.harume.memo.v216" harumemo/workspace/app/build.gradle
           grep -q "saveBeforeSwitchingMemo" harumemo/workspace/app/src/main/java/app/harume/memo/VoiceRecorderService.java
           grep -q "activeFolderId" harumemo/workspace/app/src/main/java/app/harume/memo/FoldersPanel.java
