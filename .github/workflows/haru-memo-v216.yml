@@ -71,16 +71,16 @@ jobs:
           grep -q "ic_folder_large" harumemo/workspace/app/src/main/java/app/harume/memo/FoldersPanel.java
           grep -q "PREF_MEMO_ID" harumemo/workspace/app/src/main/java/app/harume/memo/VoiceRecorderService.java
           test -f harumemo/workspace/app/src/main/res/drawable/ic_tab_audio.xml
-          grep -q "app.harume.memo.v215" harumemo/workspace/app/build.gradle
+          grep -q "app.harume.memo.v216" harumemo/workspace/app/build.gradle
           grep -q "CREATE TABLE folders" harumemo/workspace/app/src/main/java/app/harume/memo/MemoStore.java
           grep -q "startDragAndDrop" harumemo/workspace/app/src/main/java/app/harume/memo/FoldersPanel.java
           grep -q "class MemoImporter" harumemo/workspace/app/src/main/java/app/harume/memo/MemoImporter.java
-          grep -q "app.harume.memo.v215" harumemo/workspace/app/src/main/res/xml/shortcuts.xml
-          grep -q "app.harume.memo.v215" harumemo/workspace/app/build.gradle
+          grep -q "app.harume.memo.v216" harumemo/workspace/app/src/main/res/xml/shortcuts.xml
+          grep -q "app.harume.memo.v216" harumemo/workspace/app/build.gradle
           grep -q "startForegroundService(cmd)" harumemo/workspace/app/src/main/java/app/harume/memo/QuickRecordActivity.java
           grep -q "screenHeight-rootHeight" harumemo/workspace/app/src/main/java/app/harume/memo/MainActivity.java
           grep -q "recordButton.setVisibility(View.GONE)" harumemo/workspace/app/src/main/java/app/harume/memo/MainActivity.java
-          grep -q "app.harume.memo.v215" harumemo/workspace/app/src/main/res/xml/shortcuts.xml
+          grep -q "app.harume.memo.v216" harumemo/workspace/app/src/main/res/xml/shortcuts.xml
           grep -q "imeIsActuallyVisible" harumemo/workspace/app/src/main/java/app/harume/memo/MainActivity.java
           grep -q "imeWatcher" harumemo/workspace/app/src/main/java/app/harume/memo/MainActivity.java
           grep -q "bodyEditor.setOnFocusChangeListener" harumemo/workspace/app/src/main/java/app/harume/memo/MainActivity.java
