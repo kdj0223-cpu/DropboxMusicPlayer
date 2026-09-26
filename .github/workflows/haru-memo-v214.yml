@@ -1,0 +1,103 @@
+name: Build HaruMemo 2.14 Folders APK
+on:
+  push:
+    branches: [haru-memo-v214-folders-20260926]
+    paths:
+      - 'haru-memo-v214/**'
+      - '.github/workflows/haru-memo-v214.yml'
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+      - name: Restore HaruMemo 2.0 source
+        run: |
+          mkdir -p harumemo/workspace
+          cat haru-memo-v2/part_{00..05}.txt | base64 -d > /tmp/h2.tar.xz
+          echo '64e40e5b73f7dc1a328c01b9df77b90f1f4285c1a3989fd54b32b3f77a659c6d  /tmp/h2.tar.xz' | sha256sum -c
+          tar -xJf /tmp/h2.tar.xz -C harumemo/workspace
+      - name: Add HaruMemo 2.1 editable titles and recording
+        run: |
+          cat haru-memo-v21/patch_{00..02}.txt | base64 -d > /tmp/v21.py.gz
+          echo 'a74ce7f1b1ffdb4db7daa79d6ba8ad590b09d5d473df43245cae803ace05f752  /tmp/v21.py.gz' | sha256sum -c
+          gzip -cd /tmp/v21.py.gz > /tmp/v21.py
+          python3 /tmp/v21.py harumemo/workspace
+      - name: Configure phone-only double-press shortcut
+        run: |
+          python3 haru-memo-v23/patch.py harumemo/workspace
+          python3 haru-memo-v25/patch.py harumemo/workspace
+          python3 haru-memo-v26/01_storage.py harumemo/workspace
+          python3 haru-memo-v26/02_recordings_ui.py harumemo/workspace
+          python3 haru-memo-v26/03_title_settings.py harumemo/workspace
+          cat haru-memo-v27/patch_{00..03}.txt | base64 -d > /tmp/HaruMemo27.patch.gz
+          echo 'fc3e63fa32b0d746dafceb058038e48654acdf9bf1fb096508e69831a80b40c4  /tmp/HaruMemo27.patch.gz' | sha256sum -c
+          gzip -dc /tmp/HaruMemo27.patch.gz > /tmp/HaruMemo27.patch
+          patch --fuzz=0 -p1 -d harumemo/workspace -i /tmp/HaruMemo27.patch
+          cat haru-memo-v28/patch_{00..01}.txt | base64 -d > /tmp/HaruMemo28.patch.gz
+          echo 'f4da5b4afb62f4ab65c36198805efec70d9704570463f968e66c60b779562856  /tmp/HaruMemo28.patch.gz' | sha256sum -c
+          gzip -dc /tmp/HaruMemo28.patch.gz > /tmp/HaruMemo28.patch
+          patch --fuzz=0 -p1 -d harumemo/workspace -i /tmp/HaruMemo28.patch
+          cat haru-memo-v29/patch_{00..01}.txt | base64 -d > /tmp/HaruMemo29.patch.gz
+          echo '0b257e6918446d69cf4c4cb597e477ba6dc6b29080e21fe124fdfb335da7cf0c  /tmp/HaruMemo29.patch.gz' | sha256sum -c
+          gzip -dc /tmp/HaruMemo29.patch.gz > /tmp/HaruMemo29.patch
+          patch --fuzz=0 -p1 -d harumemo/workspace -i /tmp/HaruMemo29.patch
+          cat haru-memo-v30/patch_{00..01}.txt | base64 -d > /tmp/HaruMemo210.patch.gz
+          echo '4e382c1ebb162fa2b24c8d8651f1babf9d2d0fd679a5b041110a8c17390afda7  /tmp/HaruMemo210.patch.gz' | sha256sum -c
+          gzip -dc /tmp/HaruMemo210.patch.gz > /tmp/HaruMemo210.patch
+          patch --fuzz=0 -p1 -d harumemo/workspace -i /tmp/HaruMemo210.patch
+          python3 haru-memo-v211/patch.py harumemo/workspace
+          python3 haru-memo-v212/patch.py harumemo/workspace
+          python3 haru-memo-v213/repair.py harumemo/workspace
+          cat haru-memo-v214/part_{00..03}.txt | base64 -d > /tmp/HaruMemo214.patch.xz
+          echo 'efbbfb7615de23eb4ec098e557813dfc32b9151cc4463ecc7e2cf6e863b95209  /tmp/HaruMemo214.patch.xz' | sha256sum -c
+          xz -dc /tmp/HaruMemo214.patch.xz > /tmp/HaruMemo214.patch
+          patch --fuzz=0 -p1 -d harumemo/workspace -i /tmp/HaruMemo214.patch
+          grep -q "app.harume.memo.v214" harumemo/workspace/app/build.gradle
+          grep -q "CREATE TABLE folders" harumemo/workspace/app/src/main/java/app/harume/memo/MemoStore.java
+          grep -q "startDragAndDrop" harumemo/workspace/app/src/main/java/app/harume/memo/FoldersPanel.java
+          grep -q "class MemoImporter" harumemo/workspace/app/src/main/java/app/harume/memo/MemoImporter.java
+          grep -q "app.harume.memo.v214" harumemo/workspace/app/src/main/res/xml/shortcuts.xml
+          grep -q "app.harume.memo.v214" harumemo/workspace/app/build.gradle
+          grep -q "startForegroundService(cmd)" harumemo/workspace/app/src/main/java/app/harume/memo/QuickRecordActivity.java
+          grep -q "screenHeight-rootHeight" harumemo/workspace/app/src/main/java/app/harume/memo/MainActivity.java
+          grep -q "recordButton.setVisibility(View.GONE)" harumemo/workspace/app/src/main/java/app/harume/memo/MainActivity.java
+          grep -q "app.harume.memo.v214" harumemo/workspace/app/src/main/res/xml/shortcuts.xml
+          grep -q "imeIsActuallyVisible" harumemo/workspace/app/src/main/java/app/harume/memo/MainActivity.java
+          grep -q "imeWatcher" harumemo/workspace/app/src/main/java/app/harume/memo/MainActivity.java
+          grep -q "bodyEditor.setOnFocusChangeListener" harumemo/workspace/app/src/main/java/app/harume/memo/MainActivity.java
+          grep -q "writerTitleRow.setVisibility" harumemo/workspace/app/src/main/java/app/harume/memo/MainActivity.java
+          grep -q "installKeyboardLayoutObserver" harumemo/workspace/app/src/main/java/app/harume/memo/MainActivity.java
+          grep -q "setCompactEditor" harumemo/workspace/app/src/main/java/app/harume/memo/MainActivity.java
+          grep -q "applyEditorUndo" harumemo/workspace/app/src/main/java/app/harume/memo/MainActivity.java
+          test -f harumemo/workspace/app/src/main/java/app/harume/memo/EditorHistory.java
+          grep -q "confirmReplaceRecording" harumemo/workspace/app/src/main/java/app/harume/memo/MainActivity.java
+          grep -q "반복 재생 켜짐" harumemo/workspace/app/src/main/java/app/harume/memo/RecordingsPanel.java
+          grep -q "haru_record_toggle" harumemo/workspace/app/src/main/res/xml/shortcuts.xml
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+      - name: Install Android SDK
+        run: |
+          echo "ANDROID_HOME=${ANDROID_HOME:-/usr/local/lib/android/sdk}" >> "$GITHUB_ENV"
+          export PATH="$(dirname "$(find "$ANDROID_HOME/cmdline-tools" -type f -name sdkmanager | sort -V | tail -1)"):$PATH"
+          yes | sdkmanager --licenses >/dev/null || true
+          sdkmanager --install "platforms;android-35" "build-tools;35.0.0"
+      - uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: '8.9'
+      - name: Build APK
+        run: gradle -p harumemo/workspace --no-daemon :app:assembleDebug
+      - name: APK and manifest validation
+        run: |
+          test -s harumemo/workspace/app/build/outputs/apk/debug/app-debug.apk
+          unzip -t harumemo/workspace/app/build/outputs/apk/debug/app-debug.apk | tail -1
+          "$ANDROID_HOME/build-tools/35.0.0/aapt" dump badging harumemo/workspace/app/build/outputs/apk/debug/app-debug.apk | grep "package: name='app.harume.memo.v214'"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: HaruMemo-2.14-apk
+          path: harumemo/workspace/app/build/outputs/apk/debug/app-debug.apk
+          if-no-files-found: error
