@@ -1,0 +1,58 @@
+name: Export HaruMemo 2.13 source
+on:
+  push:
+    branches: [haru-memo-v214-folders-20260926]
+    paths:
+      - '.github/workflows/haru-memo-v214-export.yml'
+  workflow_dispatch:
+
+jobs:
+  export:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Restore HaruMemo 2.13 source
+        run: |
+          mkdir -p harumemo/workspace
+          cat haru-memo-v2/part_{00..05}.txt | base64 -d > /tmp/h2.tar.xz
+          echo '64e40e5b73f7dc1a328c01b9df77b90f1f4285c1a3989fd54b32b3f77a659c6d  /tmp/h2.tar.xz' | sha256sum -c
+          tar -xJf /tmp/h2.tar.xz -C harumemo/workspace
+      - name: Add HaruMemo 2.1 editable titles and recording
+        run: |
+          cat haru-memo-v21/patch_{00..02}.txt | base64 -d > /tmp/v21.py.gz
+          echo 'a74ce7f1b1ffdb4db7daa79d6ba8ad590b09d5d473df43245cae803ace05f752  /tmp/v21.py.gz' | sha256sum -c
+          gzip -cd /tmp/v21.py.gz > /tmp/v21.py
+          python3 /tmp/v21.py harumemo/workspace
+      - name: Configure phone-only double-press shortcut
+        run: |
+          python3 haru-memo-v23/patch.py harumemo/workspace
+          python3 haru-memo-v25/patch.py harumemo/workspace
+          python3 haru-memo-v26/01_storage.py harumemo/workspace
+          python3 haru-memo-v26/02_recordings_ui.py harumemo/workspace
+          python3 haru-memo-v26/03_title_settings.py harumemo/workspace
+          cat haru-memo-v27/patch_{00..03}.txt | base64 -d > /tmp/HaruMemo27.patch.gz
+          echo 'fc3e63fa32b0d746dafceb058038e48654acdf9bf1fb096508e69831a80b40c4  /tmp/HaruMemo27.patch.gz' | sha256sum -c
+          gzip -dc /tmp/HaruMemo27.patch.gz > /tmp/HaruMemo27.patch
+          patch --fuzz=0 -p1 -d harumemo/workspace -i /tmp/HaruMemo27.patch
+          cat haru-memo-v28/patch_{00..01}.txt | base64 -d > /tmp/HaruMemo28.patch.gz
+          echo 'f4da5b4afb62f4ab65c36198805efec70d9704570463f968e66c60b779562856  /tmp/HaruMemo28.patch.gz' | sha256sum -c
+          gzip -dc /tmp/HaruMemo28.patch.gz > /tmp/HaruMemo28.patch
+          patch --fuzz=0 -p1 -d harumemo/workspace -i /tmp/HaruMemo28.patch
+          cat haru-memo-v29/patch_{00..01}.txt | base64 -d > /tmp/HaruMemo29.patch.gz
+          echo '0b257e6918446d69cf4c4cb597e477ba6dc6b29080e21fe124fdfb335da7cf0c  /tmp/HaruMemo29.patch.gz' | sha256sum -c
+          gzip -dc /tmp/HaruMemo29.patch.gz > /tmp/HaruMemo29.patch
+          patch --fuzz=0 -p1 -d harumemo/workspace -i /tmp/HaruMemo29.patch
+          cat haru-memo-v30/patch_{00..01}.txt | base64 -d > /tmp/HaruMemo210.patch.gz
+          echo '4e382c1ebb162fa2b24c8d8651f1babf9d2d0fd679a5b041110a8c17390afda7  /tmp/HaruMemo210.patch.gz' | sha256sum -c
+          gzip -dc /tmp/HaruMemo210.patch.gz > /tmp/HaruMemo210.patch
+          patch --fuzz=0 -p1 -d harumemo/workspace -i /tmp/HaruMemo210.patch
+          python3 haru-memo-v211/patch.py harumemo/workspace
+          python3 haru-memo-v212/patch.py harumemo/workspace
+          python3 haru-memo-v213/repair.py harumemo/workspace
+          test -f harumemo/workspace/app/src/main/java/app/harume/memo/EditorHistory.java
+          tar -czf /tmp/HaruMemo213_source.tar.gz -C harumemo/workspace .
+      - uses: actions/upload-artifact@v4
+        with:
+          name: HaruMemo213-source-for-folders
+          path: /tmp/HaruMemo213_source.tar.gz
+          if-no-files-found: error
