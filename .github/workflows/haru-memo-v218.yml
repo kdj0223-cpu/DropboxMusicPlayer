@@ -69,6 +69,7 @@ jobs:
           echo '8bc3d0c8e5a3341f9f3c0f6e0d4ed08d7607855e49112de76c8386cf581c1728  /tmp/HaruMemo218.patch.xz' | sha256sum -c
           xz -dc /tmp/HaruMemo218.patch.xz > /tmp/HaruMemo218.patch
           patch --fuzz=0 -p2 -d harumemo/workspace -i /tmp/HaruMemo218.patch
+          python3 haru-memo-v218/fix_newline.py harumemo/workspace
           grep -q "app.harume.memo.v218" harumemo/workspace/app/build.gradle
           grep -q "finishWriterEditing" harumemo/workspace/app/src/main/java/app/harume/memo/MainActivity.java
           grep -q "체크리스트" harumemo/workspace/app/src/main/java/app/harume/memo/MainActivity.java
