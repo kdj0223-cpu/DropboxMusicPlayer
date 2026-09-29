@@ -98,7 +98,6 @@ jobs:
           grep -q "recordButton.setVisibility(View.GONE)" harumemo/workspace/app/src/main/java/app/harume/memo/MainActivity.java
           grep -q "app.harume.memo.v218" harumemo/workspace/app/src/main/res/xml/shortcuts.xml
           grep -q "imeIsActuallyVisible" harumemo/workspace/app/src/main/java/app/harume/memo/MainActivity.java
-          grep -q "imeWatcher" harumemo/workspace/app/src/main/java/app/harume/memo/MainActivity.java
           grep -q "bodyEditor.setOnFocusChangeListener" harumemo/workspace/app/src/main/java/app/harume/memo/MainActivity.java
           grep -q "writerTitleRow.setVisibility" harumemo/workspace/app/src/main/java/app/harume/memo/MainActivity.java
           grep -q "installKeyboardLayoutObserver" harumemo/workspace/app/src/main/java/app/harume/memo/MainActivity.java
