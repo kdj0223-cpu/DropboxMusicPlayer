@@ -74,6 +74,9 @@ jobs:
           echo '074e8fb26a3f1cdeecc785e92f6dec9ffafaf78a41b7cd2e7f013f1ecef6ebf5  /tmp/v219_patch.py.xz' | sha256sum -c
           xz -dc /tmp/v219_patch.py.xz > /tmp/v219_patch.py
           python3 /tmp/v219_patch.py harumemo/workspace
+          python3 haru-memo-v219/tap_edit.py harumemo/workspace
+          grep -q "beginWriterEditingAtLine" harumemo/workspace/app/src/main/java/app/harume/memo/MainActivity.java
+          grep -q "여기를 눌러 작성하세요" harumemo/workspace/app/src/main/java/app/harume/memo/MainActivity.java
           grep -q "app.harume.memo.v219" harumemo/workspace/app/build.gradle
           grep -q "SharedLibrary.restoreIfEmpty" harumemo/workspace/app/src/main/java/app/harume/memo/MainActivity.java
           grep -q "class SharedLibrary" harumemo/workspace/app/src/main/java/app/harume/memo/SharedLibrary.java
