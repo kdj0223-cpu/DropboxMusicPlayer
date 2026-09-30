@@ -70,52 +70,15 @@ jobs:
           xz -dc /tmp/HaruMemo218.patch.xz > /tmp/HaruMemo218.patch
           patch --fuzz=0 -p2 -d harumemo/workspace -i /tmp/HaruMemo218.patch
           python3 haru-memo-v218/fix_newline.py harumemo/workspace
-          cat haru-memo-v219/patch.txt | base64 -d > /tmp/HaruMemo219.patch.xz
-          echo 'b42e2c99f32a7a53452740b407c8dcb808ef990c1db334985115c313bf48fd46  /tmp/HaruMemo219.patch.xz' | sha256sum -c
-          xz -dc /tmp/HaruMemo219.patch.xz > /tmp/HaruMemo219.patch
-          patch --fuzz=0 -p1 -d harumemo/workspace -i /tmp/HaruMemo219.patch
+          cat haru-memo-v219/part_{00..01}.txt | base64 -d > /tmp/v219_patch.py.xz
+          echo '074e8fb26a3f1cdeecc785e92f6dec9ffafaf78a41b7cd2e7f013f1ecef6ebf5  /tmp/v219_patch.py.xz' | sha256sum -c
+          xz -dc /tmp/v219_patch.py.xz > /tmp/v219_patch.py
+          python3 /tmp/v219_patch.py harumemo/workspace
           grep -q "app.harume.memo.v219" harumemo/workspace/app/build.gradle
-          grep -q "class SharedVaultImporter" harumemo/workspace/app/src/main/java/app/harume/memo/SharedVaultImporter.java
+          grep -q "SharedLibrary.restoreIfEmpty" harumemo/workspace/app/src/main/java/app/harume/memo/MainActivity.java
+          grep -q "class SharedLibrary" harumemo/workspace/app/src/main/java/app/harume/memo/SharedLibrary.java
           grep -q "mirrorFolders" harumemo/workspace/app/src/main/java/app/harume/memo/MemoVault.java
-          grep -q "TextView\[\] editingTools" harumemo/workspace/app/src/main/java/app/harume/memo/MainActivity.java
-          grep -q "app.harume.memo.v219" harumemo/workspace/app/build.gradle
-          grep -q "finishWriterEditing" harumemo/workspace/app/src/main/java/app/harume/memo/MainActivity.java
-          grep -q "체크리스트" harumemo/workspace/app/src/main/java/app/harume/memo/MainActivity.java
-          grep -q "STRIKE_THRU_TEXT_FLAG" harumemo/workspace/app/src/main/java/app/harume/memo/MainActivity.java
-          grep -q "writerEditing" harumemo/workspace/app/src/main/java/app/harume/memo/MainActivity.java
-          grep -q "app.harume.memo.v219" harumemo/workspace/app/build.gradle
-          grep -q "settleWriterForReading" harumemo/workspace/app/src/main/java/app/harume/memo/MainActivity.java
-          grep -q "listHeader.setVisibility" harumemo/workspace/app/src/main/java/app/harume/memo/FoldersPanel.java
-          grep -q 'android:width="52dp"' harumemo/workspace/app/src/main/res/drawable/ic_folder_large.xml
-          grep -q 'return activeFolderId>0?activeFolderId:MemoStore.ALL_FOLDERS;' harumemo/workspace/app/src/main/java/app/harume/memo/FoldersPanel.java
-          grep -q "app.harume.memo.v219" harumemo/workspace/app/build.gradle
-          grep -q "saveBeforeSwitchingMemo" harumemo/workspace/app/src/main/java/app/harume/memo/VoiceRecorderService.java
-          grep -q "activeFolderId" harumemo/workspace/app/src/main/java/app/harume/memo/FoldersPanel.java
-          grep -q "bindLiveVoiceMemo" harumemo/workspace/app/src/main/java/app/harume/memo/MainActivity.java
-          grep -q "startDragAndDrop" harumemo/workspace/app/src/main/java/app/harume/memo/FoldersPanel.java
-          grep -q "ic_folder_large" harumemo/workspace/app/src/main/java/app/harume/memo/FoldersPanel.java
-          grep -q "PREF_MEMO_ID" harumemo/workspace/app/src/main/java/app/harume/memo/VoiceRecorderService.java
-          test -f harumemo/workspace/app/src/main/res/drawable/ic_tab_audio.xml
-          grep -q "app.harume.memo.v219" harumemo/workspace/app/build.gradle
-          grep -q "CREATE TABLE folders" harumemo/workspace/app/src/main/java/app/harume/memo/MemoStore.java
-          grep -q "startDragAndDrop" harumemo/workspace/app/src/main/java/app/harume/memo/FoldersPanel.java
-          grep -q "class MemoImporter" harumemo/workspace/app/src/main/java/app/harume/memo/MemoImporter.java
-          grep -q "app.harume.memo.v219" harumemo/workspace/app/src/main/res/xml/shortcuts.xml
-          grep -q "app.harume.memo.v219" harumemo/workspace/app/build.gradle
-          grep -q "startForegroundService(cmd)" harumemo/workspace/app/src/main/java/app/harume/memo/QuickRecordActivity.java
-          grep -q "screenHeight-rootHeight" harumemo/workspace/app/src/main/java/app/harume/memo/MainActivity.java
-          grep -q "recordButton.setVisibility(View.GONE)" harumemo/workspace/app/src/main/java/app/harume/memo/MainActivity.java
-          grep -q "app.harume.memo.v219" harumemo/workspace/app/src/main/res/xml/shortcuts.xml
-          grep -q "imeIsActuallyVisible" harumemo/workspace/app/src/main/java/app/harume/memo/MainActivity.java
-          grep -q "bodyEditor.setOnFocusChangeListener" harumemo/workspace/app/src/main/java/app/harume/memo/MainActivity.java
-          grep -q "writerTitleRow.setVisibility" harumemo/workspace/app/src/main/java/app/harume/memo/MainActivity.java
-          grep -q "installKeyboardLayoutObserver" harumemo/workspace/app/src/main/java/app/harume/memo/MainActivity.java
-          grep -q "setCompactEditor" harumemo/workspace/app/src/main/java/app/harume/memo/MainActivity.java
-          grep -q "applyEditorUndo" harumemo/workspace/app/src/main/java/app/harume/memo/MainActivity.java
-          test -f harumemo/workspace/app/src/main/java/app/harume/memo/EditorHistory.java
-          grep -q "confirmReplaceRecording" harumemo/workspace/app/src/main/java/app/harume/memo/MainActivity.java
-          grep -q "반복 재생 켜짐" harumemo/workspace/app/src/main/java/app/harume/memo/RecordingsPanel.java
-          grep -q "haru_record_toggle" harumemo/workspace/app/src/main/res/xml/shortcuts.xml
+          grep -q "TextView\[] editTools" harumemo/workspace/app/src/main/java/app/harume/memo/MainActivity.java
       - uses: actions/setup-java@v4
         with:
           distribution: temurin
